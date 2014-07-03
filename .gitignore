@@ -10,3 +10,4 @@ donotinclude/*
 donotinclude/vaitywallpaper/*.*
 DoNotInclude.java
 testimages/*
+client/*
