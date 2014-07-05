@@ -1,26 +1,75 @@
 package me.naftoreiclag.cliyent;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class Client extends JFrame
+public class Client extends JPanel
 {
-	private Client()
+	public static class MainFrame extends JFrame
 	{
-		super("Pig Collision Demo");
-		
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(500, 500);
-		this.setLocationRelativeTo(null);
+		private MainFrame()
+		{
+			super("Client");
+			
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setSize(500, 500);
+			this.setLocationRelativeTo(null);
 
-		MainPanel m = new MainPanel();
-		this.add(m);
+			Client m = new Client();
+			this.add(m);
+		}
+	}
+	
+	public static void main(String argv[]) throws Exception
+	{
+		MainFrame m = new MainFrame();
+		m.setVisible(true);
+	}
+	
+	public Client()
+	{
+		this.setSize(500, 500);
+		
+		this.setFocusable(true);
+		this.requestFocusInWindow();
+		
+		(new Thread()
+		{
+			double lastTick = System.currentTimeMillis();
+			
+			@Override
+			public void run()
+			{
+				while(true)
+				{
+					if(System.currentTimeMillis() > lastTick + 10d)
+					{
+						lastTick = System.currentTimeMillis();
+						
+						
+						
+						repaint();
+					}
+				}
+		    }
+		}).start();
+	}
+	
+	@Override
+	public void paint(Graphics g)
+	{
+		Graphics2D g2 = (Graphics2D) g;
+		
+		g2.setColor(Color.WHITE);
 	}
 	
 	public static void maain(String argv[]) throws Exception
 	{
-		Client c = new Client();
-		c.setVisible(true);
 		/*
 		String address = "localhost";
 		int port = 1337;
