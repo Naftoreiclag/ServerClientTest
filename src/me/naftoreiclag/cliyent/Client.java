@@ -3,6 +3,9 @@ package me.naftoreiclag.cliyent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,7 +15,7 @@ public class Client extends JPanel
 {
 	public static class MainFrame extends JFrame
 	{
-		private MainFrame()
+		private MainFrame() throws Exception
 		{
 			super("Client");
 			
@@ -20,8 +23,8 @@ public class Client extends JPanel
 			this.setSize(500, 500);
 			this.setLocationRelativeTo(null);
 
-			Client m = new Client();
-			this.add(m);
+			Client client = new Client();
+			this.add(client);
 		}
 	}
 	
@@ -31,12 +34,29 @@ public class Client extends JPanel
 		m.setVisible(true);
 	}
 	
-	public Client()
+	public LocalMap map;
+	public Player player;
+	
+	String address = "localhost";
+	int port = 1337;
+	
+	public Client() throws Exception
 	{
 		this.setSize(500, 500);
 		
 		this.setFocusable(true);
 		this.requestFocusInWindow();
+		
+		map = new LocalMap();
+		player = new Player();
+		
+		Socket socket = new Socket(address, port);
+		DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
+		DataInputStream fromServer = new DataInputStream(socket.getInputStream());
+		System.out.println("Connection established to " + address + ":" + port + "...");
+		
+		System.out.println("Waiting for server to give a spawn chunk");
+		long spawnChunk = fromServer.readLong();
 		
 		(new Thread()
 		{
@@ -47,11 +67,11 @@ public class Client extends JPanel
 			{
 				while(true)
 				{
-					if(System.currentTimeMillis() > lastTick + 10d)
+					double rightNow = System.currentTimeMillis();
+					if(rightNow > lastTick + 10d)
 					{
-						lastTick = System.currentTimeMillis();
-						
-						
+						double delta = rightNow - lastTick;
+						lastTick = rightNow;
 						
 						repaint();
 					}
@@ -66,6 +86,8 @@ public class Client extends JPanel
 		Graphics2D g2 = (Graphics2D) g;
 		
 		g2.setColor(Color.WHITE);
+		
+		map.paint(g2, player);
 	}
 	
 	public static void maain(String argv[]) throws Exception

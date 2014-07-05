@@ -1,5 +1,7 @@
 package me.naftoreiclag.cliyent;
 
+import java.awt.image.BufferedImage;
+
 public class Decal
 {
 	public int pWidth;
@@ -10,4 +12,9 @@ public class Decal
 	
 	private byte[][] pixelData;
 	byte backgroundColor;
+	
+	public BufferedImage getImage()
+	{
+		return null;
+	}
 }
