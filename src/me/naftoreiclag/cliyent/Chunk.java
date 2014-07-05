@@ -14,4 +14,11 @@ public class Chunk
 	protected long eID;
 	
 	BufferedImage image;
+	
+	public Chunk(byte[] chunkBytes)
+	{
+		int index = 0;
+		
+		ID = chunkBytes[index ++];
+	}
 }

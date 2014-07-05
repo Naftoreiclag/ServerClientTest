@@ -40,6 +40,10 @@ public class Client extends JPanel
 	String address = "localhost";
 	int port = 1337;
 	
+	Socket socket;
+	DataOutputStream toServer;
+	DataInputStream fromServer;
+	
 	public Client() throws Exception
 	{
 		this.setSize(500, 500);
@@ -47,18 +51,19 @@ public class Client extends JPanel
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 		
-		map = new LocalMap();
-		player = new Player();
 		
-		Socket socket = new Socket(address, port);
-		DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
-		DataInputStream fromServer = new DataInputStream(socket.getInputStream());
+		socket = new Socket(address, port);
+		toServer = new DataOutputStream(socket.getOutputStream());
+		fromServer = new DataInputStream(socket.getInputStream());
+		map = new LocalMap(toServer, fromServer);
 		System.out.println("Connection established to " + address + ":" + port + "...");
 		
 		System.out.println("Waiting for server to give a spawn chunk");
 		long spawnChunk = fromServer.readLong();
+
+		player = new Player(spawnChunk);
 		
-		(new Thread()
+		new Thread()
 		{
 			double lastTick = System.currentTimeMillis();
 			
@@ -77,7 +82,7 @@ public class Client extends JPanel
 					}
 				}
 		    }
-		}).start();
+		}.start();
 	}
 	
 	@Override
