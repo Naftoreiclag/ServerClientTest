@@ -18,9 +18,14 @@ public class Client
 		DataInputStream fromServer = new DataInputStream(socket.getInputStream());
 		System.out.println("Connection established to " + address + ":" + port + "...");
 		
-		long requestChunk = 1337;
-		toServer.writeLong(requestChunk);
-		System.out.println("Sent request for chunk " + requestChunk);
+		System.out.println("Waiting for server to give a spawn chunk");
+		long spawnChunk = fromServer.readLong();
+		
+		toServer.writeByte(1);
+		
+		System.out.println("Requesting chunk");
+		toServer.writeLong(spawnChunk);
+		System.out.println("Sent request for chunk " + spawnChunk);
 		
 		int expectedFileSize = fromServer.readInt();
 		System.out.println("File will be " + expectedFileSize + " bytes");
@@ -37,10 +42,10 @@ public class Client
 	    	System.out.println("Chunk received sucessfully.");
 	    }
 
-	    BufferedOutputStream toFile = new BufferedOutputStream(new FileOutputStream("client/map/chunks" + requestChunk + ".chunk"));
+	    BufferedOutputStream toFile = new BufferedOutputStream(new FileOutputStream("client/map/chunks" + spawnChunk + ".chunk"));
 	    toFile.write(chunkBytes, 0, actualFileSize);
 	    toFile.close();
-    	System.out.println("Written to " + "client/map/chunks" + requestChunk + ".chunk" + ".");
+    	System.out.println("Written to " + "client/map/chunks" + spawnChunk + ".chunk" + ".");
     	
 	    socket.close();
 		System.out.println("Socket closed.");
