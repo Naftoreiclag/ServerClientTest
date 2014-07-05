@@ -9,4 +9,5 @@ public class Decal
 	public int leftPadding;
 	
 	private byte[][] pixelData;
+	byte backgroundColor;
 }
