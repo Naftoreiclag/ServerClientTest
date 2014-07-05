@@ -1,15 +1,27 @@
-package me.naftoreiclag.survur;
+package me.naftoreiclag.cliyent;
 
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.net.Socket;
+import javax.swing.JFrame;
 
-public class Client
+@SuppressWarnings("serial")
+public class Client extends JFrame
 {
-	public static void main(String argv[]) throws Exception
+	private Client()
 	{
+		super("Pig Collision Demo");
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setSize(500, 500);
+		this.setLocationRelativeTo(null);
+
+		MainPanel m = new MainPanel();
+		this.add(m);
+	}
+	
+	public static void maain(String argv[]) throws Exception
+	{
+		Client c = new Client();
+		c.setVisible(true);
+		/*
 		String address = "localhost";
 		int port = 1337;
 
@@ -49,6 +61,7 @@ public class Client
     	
 	    socket.close();
 		System.out.println("Socket closed.");
+		*/
 
 	}
 }
