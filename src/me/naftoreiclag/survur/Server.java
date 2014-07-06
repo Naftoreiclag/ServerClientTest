@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Random;
 
@@ -29,10 +30,20 @@ public class Server
 				spawnChunks[i] += chunkBytes[(i << 3) + j];
 			}
 		}
+		
+		System.out.print("Spawn chunk list: ");
+		for(long id : spawnChunks)
+		{
+			System.out.print(id);
+			System.out.print(" ");
+		}
+		System.out.println();
 	}
 	
 	public static void main(String args[]) throws Exception
 	{
+		loadSpawnChunks();
+		
 		ServerSocket serverSocket = new ServerSocket(1337);
 
 		boolean running = true;
@@ -53,7 +64,18 @@ public class Server
 			while(conversationSustained)
 			{
 				System.out.println("Waiting for client to request something...");
-				byte requestType = fromClient.readByte();
+				byte requestType;
+				try
+				{
+					requestType = fromClient.readByte();
+				}
+				catch(Exception e)
+				{
+					System.err.println("Communiation with client lost: " + e.getLocalizedMessage());
+					
+					conversationSustained = false;
+					break;
+				}
 				
 				if(requestType == 0)
 				{
@@ -66,15 +88,30 @@ public class Server
 					long requestedChunk = fromClient.readLong();
 					System.out.println("Client wants chunk " + requestedChunk);
 					
-					byte[] chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks/" + requestedChunk + ".c"));
-					int fileSize = chunkBytes.length;
 					
-					toClient.writeInt(fileSize);
-					System.out.println("Informed client that chunk " + requestedChunk + " is " + fileSize + "bytes.");
+					byte[] chunkBytes = null;
+					try
+					{
+						chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks/" + requestedChunk + ".c"));
+					}
+					catch(NoSuchFileException e)
+					{
+						System.out.println("Chunk " + requestedChunk + " does not exist.");
+						toClient.writeInt(0);
+						System.out.println("Client informed of this.");
+					}
 					
-					toClient.write(chunkBytes, 0, chunkBytes.length);
-					toClient.flush();
-					System.out.println("Sent client chunk.");
+					if(chunkBytes != null)
+					{
+						int fileSize = chunkBytes.length;
+						
+						toClient.writeInt(fileSize);
+						System.out.println("Informed client that chunk " + requestedChunk + " is " + fileSize + "bytes.");
+						
+						toClient.write(chunkBytes, 0, chunkBytes.length);
+						toClient.flush();
+						System.out.println("Sent client chunk.");
+					}
 				}
 			}
 			

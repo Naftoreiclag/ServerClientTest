@@ -25,15 +25,17 @@ public class LocalMap
 		int viewRad = 2;
 		int scale = 64;
 		
-		Chunk northWest = chunks.get(player.locationChunkID);
+		int offset = 0;
+		
+		Chunk northWest = getChunk(player.locationChunkID);
 		for(int _ = 0; _ < viewRad; ++ _)
 		{
-			northWest = chunks.get(northWest.nId);
-			northWest = chunks.get(northWest.wId);
+			northWest = getChunk(northWest.nId);
+			northWest = getChunk(northWest.wId);
 		}
 		
 		// Pointer that stays in the west-most column and moves south with y
-		Chunk pinpointA = chunks.get(0);
+		Chunk pinpointA = northWest;
 		for(int y = 0; y <= viewRad * 2; ++ y)
 		{
 			// Pointer that is the same row as A but moves east with x
@@ -43,11 +45,11 @@ public class LocalMap
 				g2.drawImage(pinpointB.image, x * scale, y * scale, scale, scale, null);
 				
 				// Move pointer B east, unless this is the last in the columns, in which case don't do anything because that's pointless.
-				if(x != viewRad * 2) { pinpointB = chunks.get(pinpointB.eId); }
+				if(x != viewRad * 2) { pinpointB = getChunk(pinpointB.eId); }
 			}
 
 			// Move pointer A south, unless this is the last in the rows, in which case don't do anything because that's pointless.
-			if(y != viewRad * 2) { pinpointA = chunks.get(pinpointA.sId); }
+			if(y != viewRad * 2) { pinpointA = getChunk(pinpointA.sId); }
 		}
 	}
 	
@@ -71,7 +73,7 @@ public class LocalMap
 				System.err.println("Could not get chunk" + id + " from server!");
 			}
 			
-			chunks.put(chunk.id, chunk);
+			chunks.put(id, chunk);
 		}
 		
 		return chunk;
@@ -80,6 +82,7 @@ public class LocalMap
 	public Chunk getChunkFromServer(long id) throws Exception
 	{
 		System.out.println("Requesting chunk");
+		toServer.write(1);
 		toServer.writeLong(id);
 		System.out.println("Sent request for chunk " + id);
 		
