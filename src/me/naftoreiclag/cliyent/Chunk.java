@@ -52,6 +52,6 @@ public class Chunk
 			}
 		}
 		
-		image = Decal.parse(data, byteIndex);
+		image = Decal.parseUnalphaedImage(data, byteIndex);
 	}
 }

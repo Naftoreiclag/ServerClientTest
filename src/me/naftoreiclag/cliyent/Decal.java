@@ -11,7 +11,7 @@ public class Decal
 		return null;
 	}
 
-	public static BufferedImage parse(byte[] data, int byteIndex)
+	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex)
 	{
 		int pWidth = data[byteIndex ++];
 		int pHeight = data[byteIndex ++];
