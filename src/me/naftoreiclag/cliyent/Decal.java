@@ -4,17 +4,6 @@ import java.awt.image.BufferedImage;
 
 public class Decal
 {
-	/*
-	public int pWidth;
-	public int pHeight;
-	
-	public int topPadding;
-	public int leftPadding;
-	
-	private byte[][] pixelData;
-	byte backgroundColor;
-	*/
-	
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 	
 	public BufferedImage getImage()
@@ -26,11 +15,8 @@ public class Decal
 	{
 		int pWidth = data[byteIndex ++];
 		int pHeight = data[byteIndex ++];
-		int topPadding = data[byteIndex ++];
-		int leftPadding = data[byteIndex ++];
 		
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-		pixelData = new byte[pWidth][pHeight];
 
 		int pixX = 0;
 		int pixY = 0;
@@ -52,7 +38,7 @@ public class Decal
 			
 			for(int x = 0; x < width; ++ x)
 			{
-				pixelData[pixX ++][pixY] = color;
+				ret.setRGB(pixX ++, pixY, pallete[color]);
 	
 				if(pixX >= pWidth)
 				{
@@ -72,6 +58,6 @@ public class Decal
 			}
 		}
 		
-		return null;
+		return ret;
 	}
 }

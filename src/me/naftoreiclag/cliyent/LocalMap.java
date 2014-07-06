@@ -51,24 +51,30 @@ public class LocalMap
 		}
 	}
 	
-	public Chunk getChunk(long iD)
+	public Chunk getChunk(long id)
 	{
-		Chunk trY = chunks.get(iD);
+		Chunk chunk = chunks.get(id);
 		
-		if(trY == null)
+		if(chunk == null)
 		{
 			try
 			{
-				trY = getChunkFromServer(iD);
+				chunk = getChunkFromServer(id);
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			if(chunk == null)
+			{
+				System.err.println("Could not get chunk" + id + " from server!");
+			}
+			
+			chunks.put(chunk.id, chunk);
 		}
 		
-		return trY;
+		return chunk;
 	}
 	
 	public Chunk getChunkFromServer(long id) throws Exception
@@ -79,6 +85,11 @@ public class LocalMap
 		
 		int expectedFileSize = fromServer.readInt();
 		System.out.println("File will be " + expectedFileSize + " bytes");
+		
+		if(expectedFileSize == 0)
+		{
+			return null;
+		}
 
 		byte[] chunkBytes = new byte[expectedFileSize];
 	    int actualFileSize = fromServer.read(chunkBytes, 0, chunkBytes.length);
@@ -91,9 +102,7 @@ public class LocalMap
 	    {
 	    	System.out.println("Chunk received sucessfully.");
 	    }
-	    
-	    
 		
-		return new Chunk(chunkBytes, 0);
+		return new Chunk(chunkBytes);
 	}
 }
