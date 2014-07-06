@@ -13,8 +13,8 @@ public class Decal
 
 	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex)
 	{
-		int pWidth = data[byteIndex ++];
-		int pHeight = data[byteIndex ++];
+		int pWidth = data[byteIndex ++] & 0xFF;
+		int pHeight = data[byteIndex ++] & 0xFF;
 		
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
 

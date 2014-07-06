@@ -63,6 +63,7 @@ public class Client extends JPanel
 
 		player = new Player(spawnChunk);
 		
+		/*
 		new Thread()
 		{
 			double lastTick = System.currentTimeMillis();
@@ -83,6 +84,7 @@ public class Client extends JPanel
 				}
 		    }
 		}.start();
+		*/
 	}
 	
 	@Override

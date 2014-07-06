@@ -19,12 +19,14 @@ public class Chunk
 	{
 		int byteIndex = 0;
 		
-		areaId = data[byteIndex ++];
 		id = data[byteIndex ++];
 		wId = data[byteIndex ++];
 		nId = data[byteIndex ++];
 		eId = data[byteIndex ++];
 		sId = data[byteIndex ++];
+		areaId = data[byteIndex ++];
+		
+		System.out.println("Chunk is id: " + id + " surrounded by: " + wId + ", " + nId + ", " + eId + ", " + sId);
 		
 		int colX = 0;
 		int colY = 0;

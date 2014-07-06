@@ -2,6 +2,7 @@ package me.naftoreiclag.test;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,13 +10,11 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import naftoreiclag.twobitdesigner.Landmark;
-
 public class TestChunkMaker
 {
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
 		BufferedImage image = null;
 		
@@ -47,6 +46,85 @@ public class TestChunkMaker
 		
 		// Color Data
 		
+		byte color = pixelData[0][0];
+		int size = 1;
+		
+		for(int py = 0; py < 128; ++ py)
+		{
+			for(int px = 0; px < 128; ++ px)
+			{
+				if(px == 0 && py == 0)
+				{
+					continue;
+				}
+				
+				if(color != pixelData[px][py] || size >= 31)
+				{
+					bites.add((byte) ((size << 3) + color));
+					color = pixelData[px][py];
+					size = 1;
+					
+					continue;
+				}
+				
+				++ size;
+			}
+		}
+		bites.add((byte) ((size << 3) + color));
+		
+		// Writing
+		
+		byte[] imgData = new byte[bites.size()];
+		for(int i = 0; i < bites.size(); ++ i)
+		{
+			imgData[i] = bites.get(i);
+		}
+		
+		int[] aaa = {
+				 9, 10, 11, 12, 13, 
+				16, 17, 18, 19, 20, 
+				23, 24, 25, 26, 27, 
+				30, 31, 32, 33, 34, 
+				37, 38, 39, 40, 41};
+		
+		for(int id : aaa)
+		{
+			byte[] data = new byte[6 + 32 + imgData.length];
+			
+			int byteIndex = 0;
+			
+			data[byteIndex ++] = (byte) (id);
+			data[byteIndex ++] = (byte) (id - 1);
+			data[byteIndex ++] = (byte) (id - 7);
+			data[byteIndex ++] = (byte) (id + 1);
+			data[byteIndex ++] = (byte) (id + 7);
+			data[byteIndex ++] = 0;
+			
+			for(int i = 0; i < 32; ++ i)
+			{
+				data[byteIndex ++] = 0;
+			}
+			
+			for(byte b : imgData)
+			{
+				data[byteIndex ++] = b;
+			}
+			
+			FileOutputStream fos;
+			fos = new FileOutputStream("server/map/chunks/" + id + ".c");
+			fos.write(data);
+			fos.close();
+		}
+		
+		/*
+		FileOutputStream fos;
+		fos = new FileOutputStream(fileName);
+		fos.write(data);
+		fos.close();
+		*/
+	}
+	
+	/*
 		byte color = pixelData[0][0];
 		int size = 1;
 		
@@ -93,22 +171,7 @@ public class TestChunkMaker
 		{
 			bites.add((byte) ((size << 3) + color));
 		}
-		
-		// Writing
-
-		/*
-		byte[] data = new byte[bites.size()];
-		for(int i = 0; i < bites.size(); ++ i)
-		{
-			data[i] = bites.get(i);
-		}
-		
-		FileOutputStream fos;
-		fos = new FileOutputStream(fileName);
-		fos.write(data);
-		fos.close();
-		*/
-	}
+	 */
 	
 
 	public static byte getByteFromRGB(int rgb)
