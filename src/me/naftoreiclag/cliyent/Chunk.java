@@ -28,6 +28,7 @@ public class Chunk
 		
 		System.out.println("Chunk is id: " + id + " surrounded by: " + wId + ", " + nId + ", " + eId + ", " + sId);
 		
+		/*
 		int colX = 0;
 		int colY = 0;
 		for(; byteIndex < data.length; ++ byteIndex)
@@ -53,6 +54,7 @@ public class Chunk
 				break;
 			}
 		}
+		*/
 		
 		image = Decal.parseUnalphaedImage(data, byteIndex);
 	}
