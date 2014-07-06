@@ -21,10 +21,10 @@ public class Decal
 		int ehx = 0;
 		int why = 0;
 		
-		for(int i = 3; i < data.length; ++ i)
+		for(; byteIndex < data.length; ++ byteIndex)
 		{
-			byte color = (byte) (data[i] & 0x07);
-			int width = (data[i] & 0xff) >> 3;
+			byte color = (byte) (data[byteIndex] & 0x07);
+			int width = (data[byteIndex] & 0xff) >> 3;
 			
 			for(int x = 0; x < width; ++ x)
 			{
