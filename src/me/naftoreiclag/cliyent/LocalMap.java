@@ -28,8 +28,8 @@ public class LocalMap
 		Chunk northWest = chunks.get(player.locationChunkID);
 		for(int _ = 0; _ < viewRad; ++ _)
 		{
-			northWest = chunks.get(northWest.nID);
-			northWest = chunks.get(northWest.wID);
+			northWest = chunks.get(northWest.nId);
+			northWest = chunks.get(northWest.wId);
 		}
 		
 		// Pointer that stays in the west-most column and moves south with y
@@ -43,11 +43,11 @@ public class LocalMap
 				g2.drawImage(pinpointB.image, x * scale, y * scale, scale, scale, null);
 				
 				// Move pointer B east, unless this is the last in the columns, in which case don't do anything because that's pointless.
-				if(x != viewRad * 2) { pinpointB = chunks.get(pinpointB.eID); }
+				if(x != viewRad * 2) { pinpointB = chunks.get(pinpointB.eId); }
 			}
 
 			// Move pointer A south, unless this is the last in the rows, in which case don't do anything because that's pointless.
-			if(y != viewRad * 2) { pinpointA = chunks.get(pinpointA.sID); }
+			if(y != viewRad * 2) { pinpointA = chunks.get(pinpointA.sId); }
 		}
 	}
 	
@@ -94,6 +94,6 @@ public class LocalMap
 	    
 	    
 		
-		return null;
+		return new Chunk(chunkBytes, 0);
 	}
 }
