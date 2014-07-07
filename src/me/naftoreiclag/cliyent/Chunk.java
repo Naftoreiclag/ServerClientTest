@@ -15,10 +15,8 @@ public class Chunk
 	
 	protected final BufferedImage image;
 	
-	public Chunk(byte[] data)
+	public Chunk(byte[] data, int byteIndex)
 	{
-		int byteIndex = 0;
-		
 		id = data[byteIndex ++];
 		wId = data[byteIndex ++];
 		nId = data[byteIndex ++];

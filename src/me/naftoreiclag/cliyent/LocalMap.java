@@ -106,6 +106,6 @@ public class LocalMap
 	    	System.out.println("Chunk received sucessfully.");
 	    }
 		
-		return new Chunk(chunkBytes);
+		return new Chunk(chunkBytes, 0);
 	}
 }
