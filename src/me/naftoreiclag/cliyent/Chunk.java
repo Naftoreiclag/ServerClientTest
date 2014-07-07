@@ -1,6 +1,7 @@
 package me.naftoreiclag.cliyent;
 
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 public class Chunk
 {
@@ -15,24 +16,26 @@ public class Chunk
 	
 	protected final BufferedImage image;
 	
-	public Chunk(byte[] data, int byteIndex)
+	public Chunk(ByteBuffer data)
 	{
-		id = data[byteIndex ++];
-		wId = data[byteIndex ++];
-		nId = data[byteIndex ++];
-		eId = data[byteIndex ++];
-		sId = data[byteIndex ++];
-		areaId = data[byteIndex ++];
+		id = data.get();
+		wId = data.get();
+		nId = data.get();
+		eId = data.get();
+		sId = data.get();
+		areaId = data.get();
 		
 		System.out.println("Chunk is id: " + id + " surrounded by: " + wId + ", " + nId + ", " + eId + ", " + sId);
 		
 		int colX = 0;
 		int colY = 0;
-		for(; byteIndex < data.length; ++ byteIndex)
+		while(true)
 		{
+			byte eightTiles = data.get();
+			
 			for(int i = 0; i < 8; ++ i)
 			{
-				collision[colX ++][colY] = (data[byteIndex] & (1 << i)) > 0;
+				collision[colX ++][colY] = (eightTiles & (1 << i)) > 0;
 				
 				if(colX >= 16)
 				{
@@ -51,8 +54,7 @@ public class Chunk
 				break;
 			}
 		}
-		++ byteIndex;
 		
-		image = Decal.parseUnalphaedImage(data, byteIndex, 128, 128);
+		image = Decal.parseChunkImage(data);
 	}
 }

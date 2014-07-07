@@ -3,6 +3,7 @@ package me.naftoreiclag.cliyent;
 import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,7 +106,9 @@ public class LocalMap
 	    {
 	    	System.out.println("Chunk received sucessfully.");
 	    }
+	    
+	    ByteBuffer data = ByteBuffer.wrap(chunkBytes);
 		
-		return new Chunk(chunkBytes, 0);
+		return new Chunk(data);
 	}
 }

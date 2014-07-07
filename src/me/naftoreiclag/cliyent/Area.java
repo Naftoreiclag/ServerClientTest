@@ -1,19 +1,21 @@
 package me.naftoreiclag.cliyent;
 
+import java.nio.ByteBuffer;
+
 public class Area
 {
 	protected final long id;
 	protected final Landmark[] landmarks;
 	
-	public Area(byte[] data, int byteIndex)
+	public Area(ByteBuffer data)
 	{
-		id = data[byteIndex ++];
+		id = data.get();
 		
-		landmarks = new Landmark[data[byteIndex ++]];
+		landmarks = new Landmark[data.get() & 0xFF];
 		
 		for(int i = 0; i < landmarks.length; ++ i)
 		{
-			landmarks[i] = new Landmark(data, byteIndex);
+			landmarks[i] = new Landmark(data);
 		}
 	}
 }

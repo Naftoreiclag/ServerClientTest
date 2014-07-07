@@ -1,6 +1,7 @@
 package me.naftoreiclag.cliyent;
 
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 public class Decal
 {
@@ -11,30 +12,32 @@ public class Decal
 		return null;
 	}
 
-	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex)
+	public static BufferedImage parseUnalphaedImage(ByteBuffer data)
 	{
-		int pWidth = data[byteIndex ++] & 0xFF;
-		int pHeight = data[byteIndex ++] & 0xFF;
+		int pWidth = data.get() & 0xFF;
+		int pHeight = data.get() & 0xFF;
 		
-		return parseUnalphaedImage(data, byteIndex, pWidth, pHeight);
+		return parseUnalphaedImage(data, pWidth, pHeight);
 	}
 
-	public static BufferedImage parseChunkImage(byte[] data, int byteIndex)
+	public static BufferedImage parseChunkImage(ByteBuffer data)
 	{
-		return parseUnalphaedImage(data, byteIndex, 128, 128);
+		return parseUnalphaedImage(data, 128, 128);
 	}
 
-	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex, int pWidth, int pHeight)
+	public static BufferedImage parseUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
 
 		int ehx = 0;
 		int why = 0;
 		
-		for(; byteIndex < data.length; ++ byteIndex)
+		while(true)
 		{
-			byte color = (byte) (data[byteIndex] & 0x07);
-			int width = (data[byteIndex] & 0xff) >> 3;
+			byte colorStrip = data.get();
+			
+			byte color = (byte) (colorStrip & 0x07);
+			int width = (colorStrip & 0xff) >> 3;
 			
 			for(int x = 0; x < width; ++ x)
 			{
@@ -61,34 +64,36 @@ public class Decal
 		return ret;
 	}
 
-	public static BufferedImage parseAlphaedImage(byte[] data, int byteIndex)
+	public static BufferedImage parseAlphaedImage(ByteBuffer data)
 	{
-		int pWidth = data[byteIndex ++] & 0xFF;
-		int pHeight = data[byteIndex ++] & 0xFF;
+		int pWidth = data.get() & 0xFF;
+		int pHeight = data.get() & 0xFF;
 		
-		return parseAlphaedImage(data, byteIndex, pWidth, pHeight);
+		return parseAlphaedImage(data, pWidth, pHeight);
 	}
 
-	public static BufferedImage parseAlphaedImage(byte[] data, int byteIndex, int pWidth, int pHeight)
+	public static BufferedImage parseAlphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
 
 		int ehx = 0;
 		int why = 0;
-		for(; byteIndex < data.length; ++ byteIndex)
+		while(true)
 		{
+			byte colorStrip = data.get();
+			
 			byte color;
 			int width;
 			
-			if((data[byteIndex] & 0x80) > 0)
+			if((colorStrip & 0x80) > 0)
 			{
 				color = 8;
-				width = data[byteIndex] & 0x7F;
+				width = colorStrip & 0x7F;
 			}
 			else
 			{
-				color = (byte) (data[byteIndex] & 0x07);
-				width = (data[byteIndex] & 0xff) >> 3;
+				color = (byte) (colorStrip & 0x07);
+				width = (colorStrip & 0xff) >> 3;
 			}
 			
 			for(int x = 0; x < width; ++ x)

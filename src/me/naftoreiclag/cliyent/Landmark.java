@@ -1,6 +1,7 @@
 package me.naftoreiclag.cliyent;
 
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 public class Landmark
 {
@@ -11,20 +12,22 @@ public class Landmark
 	
 	protected final BufferedImage image;
 	
-	public Landmark(byte[] data, int byteIndex)
+	public Landmark(ByteBuffer data)
 	{
-		tWidth = data[byteIndex ++];
-		tHeight = data[byteIndex ++];
+		tWidth = data.get() & 0xFF;
+		tHeight = data.get() & 0xFF;
 		
 		collision = new boolean[tWidth][tHeight];
 		
 		int colX = 0;
 		int colY = 0;
-		for(; byteIndex < data.length; ++ byteIndex)
+		while(true)
 		{
+			byte eightTiles = data.get();
+			
 			for(int i = 0; i < 8; ++ i)
 			{
-				collision[colX ++][colY] = (data[byteIndex] & (1 << i)) > 0;
+				collision[colX ++][colY] = (eightTiles & (1 << i)) > 0;
 				
 				if(colX >= 16)
 				{
@@ -43,8 +46,7 @@ public class Landmark
 				break;
 			}
 		}
-		++ byteIndex;
 		
-		image = Decal.parseAlphaedImage(data, byteIndex, tWidth << 3, tHeight << 3);
+		image = Decal.parseAlphaedImage(data, tWidth << 3, tHeight << 3);
 	}
 }
