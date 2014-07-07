@@ -18,12 +18,12 @@ public class Chunk
 	
 	public Chunk(ByteBuffer data)
 	{
-		id = data.get();
-		wId = data.get();
-		nId = data.get();
-		eId = data.get();
-		sId = data.get();
-		areaId = data.get();
+		id = data.getLong();
+		wId = data.getLong();
+		nId = data.getLong();
+		eId = data.getLong();
+		sId = data.getLong();
+		areaId = data.getLong();
 		
 		System.out.println("Chunk is id: " + id + " surrounded by: " + wId + ", " + nId + ", " + eId + ", " + sId);
 		

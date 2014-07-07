@@ -9,7 +9,7 @@ public class Area
 	
 	public Area(ByteBuffer data)
 	{
-		id = data.get();
+		id = data.getLong();
 		
 		landmarks = new Landmark[data.get() & 0xFF];
 		

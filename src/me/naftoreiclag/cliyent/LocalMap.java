@@ -24,7 +24,7 @@ public class LocalMap
 	public void paint(Graphics2D g2, Player player)
 	{
 		int viewRad = 2;
-		int scale = 128;
+		int scale = 256;
 		
 		int offset = 0;
 		
@@ -43,7 +43,7 @@ public class LocalMap
 			Chunk pinpointB = pinpointA;
 			for(int x = 0; x <= viewRad * 2; ++ x)
 			{
-				g2.drawImage(pinpointB.image, x * scale, y * scale, null);
+				g2.drawImage(pinpointB.image, x * scale, y * scale, scale, scale, null);
 				
 				// Move pointer B east, unless this is the last in the columns, in which case don't do anything because that's pointless.
 				if(x != viewRad * 2) { pinpointB = getChunk(pinpointB.eId); }

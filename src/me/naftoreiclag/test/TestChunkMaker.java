@@ -89,15 +89,62 @@ public class TestChunkMaker
 		
 		for(int id : aaa)
 		{
-			byte[] data = new byte[6 + 32 + imgData.length];
+			byte[] data = new byte[48 + 32 + imgData.length];
 			
 			int byteIndex = 0;
-			
+
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = (byte) (id);
+			
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = (byte) (id - 1);
+			
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = (byte) (id - 7);
+			
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = (byte) (id + 1);
+			
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = (byte) (id + 7);
+
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
+			data[byteIndex ++] = 0;
 			data[byteIndex ++] = 0;
 			
 			for(int i = 0; i < 32; ++ i)

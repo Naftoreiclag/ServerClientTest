@@ -12,23 +12,10 @@ public class Decal
 		return null;
 	}
 
-	public static BufferedImage parseUnalphaedImage(ByteBuffer data)
-	{
-		int pWidth = data.get() & 0xFF;
-		int pHeight = data.get() & 0xFF;
-		
-		return parseUnalphaedImage(data, pWidth, pHeight);
-	}
-
-	public static BufferedImage parseChunkImage(ByteBuffer data)
-	{
-		return parseUnalphaedImage(data, 128, 128);
-	}
-
 	public static BufferedImage parseUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-
+	
 		int ehx = 0;
 		int why = 0;
 		
@@ -42,7 +29,7 @@ public class Decal
 			for(int x = 0; x < width; ++ x)
 			{
 				ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
-
+	
 				if(ehx >= pWidth)
 				{
 					ehx = 0;
@@ -64,12 +51,17 @@ public class Decal
 		return ret;
 	}
 
-	public static BufferedImage parseAlphaedImage(ByteBuffer data)
+	public static BufferedImage parseUnalphaedImage(ByteBuffer data)
 	{
 		int pWidth = data.get() & 0xFF;
 		int pHeight = data.get() & 0xFF;
 		
-		return parseAlphaedImage(data, pWidth, pHeight);
+		return parseUnalphaedImage(data, pWidth, pHeight);
+	}
+
+	public static BufferedImage parseChunkImage(ByteBuffer data)
+	{
+		return parseUnalphaedImage(data, 128, 128);
 	}
 
 	public static BufferedImage parseAlphaedImage(ByteBuffer data, int pWidth, int pHeight)
@@ -126,5 +118,13 @@ public class Decal
 		}
 		
 		return ret;
+	}
+
+	public static BufferedImage parseAlphaedImage(ByteBuffer data)
+	{
+		int pWidth = data.get() & 0xFF;
+		int pHeight = data.get() & 0xFF;
+		
+		return parseAlphaedImage(data, pWidth, pHeight);
 	}
 }
