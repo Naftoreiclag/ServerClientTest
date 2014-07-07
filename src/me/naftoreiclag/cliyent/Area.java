@@ -2,6 +2,6 @@ package me.naftoreiclag.cliyent;
 
 public class Area
 {
-	protected long ID;
+	protected long id;
 	protected Landmark[] landmarks;
 }

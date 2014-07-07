@@ -10,12 +10,10 @@ public class Decal
 	{
 		return null;
 	}
+	
 
-	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex)
+	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex, int pWidth, int pHeight)
 	{
-		int pWidth = data[byteIndex ++] & 0xFF;
-		int pHeight = data[byteIndex ++] & 0xFF;
-		
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
 
 		int ehx = 0;
@@ -28,14 +26,7 @@ public class Decal
 			
 			for(int x = 0; x < width; ++ x)
 			{
-				try
-				{
-					ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
-				}
-				catch(Exception e)
-				{
-					System.out.println((ehx - 1) + " " + why);
-				}
+				ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
 
 				if(ehx >= pWidth)
 				{
@@ -46,5 +37,13 @@ public class Decal
 		}
 		
 		return ret;
+	}
+
+	public static BufferedImage parseUnalphaedImage(byte[] data, int byteIndex)
+	{
+		int pWidth = data[byteIndex ++] & 0xFF;
+		int pHeight = data[byteIndex ++] & 0xFF;
+		
+		return parseUnalphaedImage(data, byteIndex, pWidth, pHeight);
 	}
 }

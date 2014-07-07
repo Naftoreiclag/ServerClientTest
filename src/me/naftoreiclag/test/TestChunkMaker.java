@@ -41,8 +41,8 @@ public class TestChunkMaker
 		
 		List<Byte> bites = new ArrayList<Byte>();
 		
-		bites.add((byte) 128);
-		bites.add((byte) 128);
+		//bites.add((byte) 128);
+		//bites.add((byte) 128);
 		
 		// Color Data
 		
@@ -89,7 +89,7 @@ public class TestChunkMaker
 		
 		for(int id : aaa)
 		{
-			byte[] data = new byte[6 + imgData.length];
+			byte[] data = new byte[6 + 32 + imgData.length];
 			
 			int byteIndex = 0;
 			
@@ -100,12 +100,10 @@ public class TestChunkMaker
 			data[byteIndex ++] = (byte) (id + 7);
 			data[byteIndex ++] = 0;
 			
-			/*
 			for(int i = 0; i < 32; ++ i)
 			{
 				data[byteIndex ++] = 0;
 			}
-			*/
 			
 			for(byte b : imgData)
 			{
