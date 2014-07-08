@@ -6,26 +6,42 @@ import java.util.List;
 
 public class ParseCommons
 {
-	// collision data[][] -> ByteBuffer
-	// ByteBuffer -> collision data[][]
-
-	// ByteBuffer -> alphaed byte[][]
-	// ByteBuffer -> unalphaed byte[][]
-	// alphaed/unalphaed byte[][] -> Image
-
-	// Image -> alphaed byte[][]
-	// Image -> unalphaed byte[][]
-	// alphaed byte[][] -> ByteBuffer
-	// unalphaed byte[][] -> ByteBuffer
-	
-	//====
-	
-	// Unalphaed Buffer -> Image
-	// Alphaed Buffer -> Image
-	// Image -> Alphaed byte[][]
-	// Image -> Unalphaed byte[][]
-	
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
+
+	public static boolean[][] readCollisionArray(ByteBuffer data2, int tWidth, int tHeight)
+	{
+		boolean[][] ret = new boolean[tWidth][tHeight];
+		
+		int colX = 0;
+		int colY = 0;
+		while(true)
+		{
+			byte eightTiles = data2.get();
+			
+			for(int i = 0; i < 8; ++ i)
+			{
+				ret[colX ++][colY] = (eightTiles & (1 << i)) > 0;
+				
+				if(colX >= 16)
+				{
+					colX = 0;
+					++ colY;
+					
+					if(colY >= 16)
+					{
+						break;
+					}
+				}
+			}
+			
+			if(colY >= 16)
+			{
+				break;
+			}
+		}
+		
+		return ret;
+	}
 
 	public static byte[][] readAlphaedArray(ByteBuffer data, int pWidth, int pHeight)
 	{
@@ -122,73 +138,29 @@ public class ParseCommons
 		return ret;
 	}
 	
-	// Returns an Image created from bytes read from an alphaed Buffer
-	public static BufferedImage readAlphaedImage(ByteBuffer data, int pWidth, int pHeight)
+	public static void writeCollisionArray(boolean[][] collisionData, int tWidth, int tHeight, List<Byte> bites)
 	{
-		return arrayToImage(readAlphaedArray(data, pWidth, pHeight), pWidth, pHeight);
-	}
-
-
-	// Returns an Image created from bytes read from an unalphaed Buffer
-	public static BufferedImage readUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
-	{
-		return arrayToImage(readUnalphaedArray(data, pWidth, pHeight), pWidth, pHeight);
-	}
-	
-	public static BufferedImage arrayToImage(byte[][] pixelData, int pWidth, int pHeight)
-	{
-		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-		
-		for(int x = 0; x < pWidth; ++x)
+		int position = 0;
+		byte buildAByte = 0;
+		for(int ty = 0; ty < tHeight; ++ ty)
 		{
-			for(int y = 0; y < pHeight; ++y)
+			for(int tx = 0; tx < tWidth; ++ tx)
 			{
-				byte color = pixelData[x][y];
+				if(collisionData[tx][ty])
+				{
+					buildAByte = (byte) (buildAByte | (1 << position));
+				}
 				
-				if(color == 8)
+				++ position;
+				
+				if(position == 8)
 				{
-					ret.setRGB(x, y, 0);
-				}
-				else
-				{
-					ret.setRGB(x, y, pallete[color] | 0xFF000000);
+					bites.add(buildAByte);
+					
+					position = 0;
 				}
 			}
 		}
-		
-		return ret;
-	}
-
-	// Returns an alphaed byte[][] from an Image
-	public static byte[][] imageToAlphaedArray(BufferedImage image, int pWidth, int pHeight)
-	{
-		byte[][] pixelData = new byte[pWidth][pHeight];
-
-		for(int x = 0; x < pWidth; ++x)
-		{
-			for(int y = 0; y < pHeight; ++y)
-			{
-				pixelData[x][y] = getByteFromRGB(image.getRGB(x, y));
-			}
-		}
-		
-		return pixelData;
-	}
-
-	// Returns an unalphaed byte[][] from an Image
-	public static byte[][] imageToUnalphaedArray(BufferedImage image, int pWidth, int pHeight)
-	{
-		byte[][] pixelData = new byte[pWidth][pHeight];
-
-		for(int x = 0; x < pWidth; ++x)
-		{
-			for(int y = 0; y < pHeight; ++y)
-			{
-				pixelData[x][y] = getByteFromRGB(image.getRGB(x, y));
-			}
-		}
-		
-		return pixelData;
 	}
 
 	// Appends an alphaed byte[][] to a Byte List
@@ -272,64 +244,70 @@ public class ParseCommons
 		bites.add((byte) ((size << 3) + color));
 	}
 	
-	public static boolean[][] readCollisionArray(ByteBuffer data2, int tWidth, int tHeight)
+	// Returns an alphaed byte[][] from an Image
+	public static byte[][] convertImageToAlphaedArray(BufferedImage image, int pWidth, int pHeight)
 	{
-		boolean[][] ret = new boolean[tWidth][tHeight];
-		
-		int colX = 0;
-		int colY = 0;
-		while(true)
+		byte[][] pixelData = new byte[pWidth][pHeight];
+	
+		for(int x = 0; x < pWidth; ++x)
 		{
-			byte eightTiles = data2.get();
-			
-			for(int i = 0; i < 8; ++ i)
+			for(int y = 0; y < pHeight; ++y)
 			{
-				ret[colX ++][colY] = (eightTiles & (1 << i)) > 0;
-				
-				if(colX >= 16)
-				{
-					colX = 0;
-					++ colY;
-					
-					if(colY >= 16)
-					{
-						break;
-					}
-				}
+				pixelData[x][y] = getByteFromRGB(image.getRGB(x, y));
 			}
-			
-			if(colY >= 16)
+		}
+		
+		return pixelData;
+	}
+
+	// Returns an unalphaed byte[][] from an Image
+	public static byte[][] convertImageToUnalphaedArray(BufferedImage image, int pWidth, int pHeight)
+	{
+		byte[][] pixelData = new byte[pWidth][pHeight];
+	
+		for(int x = 0; x < pWidth; ++x)
+		{
+			for(int y = 0; y < pHeight; ++y)
 			{
-				break;
+				pixelData[x][y] = getByteFromRGB(image.getRGB(x, y));
+			}
+		}
+		
+		return pixelData;
+	}
+
+	public static BufferedImage convertEitherArrayToImage(byte[][] pixelData, int pWidth, int pHeight)
+	{
+		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
+		
+		for(int x = 0; x < pWidth; ++x)
+		{
+			for(int y = 0; y < pHeight; ++y)
+			{
+				byte color = pixelData[x][y];
+				
+				if(color == 8)
+				{
+					ret.setRGB(x, y, 0);
+				}
+				else
+				{
+					ret.setRGB(x, y, pallete[color] | 0xFF000000);
+				}
 			}
 		}
 		
 		return ret;
 	}
-	
-	public static void writeCollisionArray(boolean[][] collisionData, int tWidth, int tHeight, List<Byte> bites)
+
+	public static BufferedImage readAlphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
-		int position = 0;
-		byte buildAByte = 0;
-		for(int ty = 0; ty < tHeight; ++ ty)
-		{
-			for(int tx = 0; tx < tWidth; ++ tx)
-			{
-				if(collisionData[tx][ty])
-				{
-					buildAByte = (byte) (buildAByte | (1 << position));
-				}
-				
-				++ position;
-				
-				if(position == 8)
-				{
-					bites.add(buildAByte);
-					
-					position = 0;
-				}
-			}
-		}
+		return convertEitherArrayToImage(readAlphaedArray(data, pWidth, pHeight), pWidth, pHeight);
+	}
+
+	public static BufferedImage readUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
+	{
+		return convertEitherArrayToImage(readUnalphaedArray(data, pWidth, pHeight), pWidth, pHeight);
 	}
 
 	private static byte getByteFromRGB(int rgb)
