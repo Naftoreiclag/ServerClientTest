@@ -5,23 +5,38 @@ import java.awt.image.BufferedImage;
 public class LoadedProject
 {
 	byte[][] pixelData;
+	boolean[][] collisionData;
 
 	BufferedImage displayImage;
 	
 	int cWidth;
 	int cHeight;
 	
+	int tWidth;
+	int tHeight;
+	
 	int pWidth;
 	int pHeight;
 	
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 
+	public void setCollision(int x, int y, boolean yesNo)
+	{
+		//wats
+		collisionData[x][y] = yesNo;
+	}
+	
+	
 	public LoadedProject(BufferedImage image)
 	{
 		
 		cWidth = image.getWidth() >> 7;
 		cHeight = image.getHeight() >> 7;
 		System.out.println("New projected loaded with " + cWidth + " by " + cHeight);
+		tWidth = cWidth << 4;
+		tHeight = cHeight << 4;
+		collisionData = new boolean[tWidth][tHeight];
+		System.out.println("New projected loaded with " + tWidth + " by " + tHeight);
 		pWidth = cWidth << 7;
 		pHeight = cHeight << 7;
 		System.out.println("New projected loaded with " + pWidth + " by " + pHeight);

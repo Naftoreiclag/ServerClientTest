@@ -87,6 +87,7 @@ public class AreaMakerTest extends JFrame
 		//
 		
 		JScrollPane scrollContainer = new JScrollPane(panel);
+		panel.giveScrolPaneAccess(scrollContainer);
 
 		this.add(scrollContainer);
 	}
