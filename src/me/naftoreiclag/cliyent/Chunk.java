@@ -3,6 +3,8 @@ package me.naftoreiclag.cliyent;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
+import me.naftoreiclag.fileparsecommons.ParseCommons;
+
 public class Chunk
 {
 	protected final long id;
@@ -55,6 +57,6 @@ public class Chunk
 			}
 		}
 		
-		image = Decal.parseChunkImage(data);
+		image = ParseCommons.parseChunkImage(data);
 	}
 }

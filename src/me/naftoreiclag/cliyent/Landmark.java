@@ -3,6 +3,8 @@ package me.naftoreiclag.cliyent;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
+import me.naftoreiclag.fileparsecommons.ParseCommons;
+
 public class Landmark
 {
 	protected final int tWidth;
@@ -47,6 +49,6 @@ public class Landmark
 			}
 		}
 		
-		image = Decal.parseAlphaedImage(data, tWidth << 3, tHeight << 3);
+		image = ParseCommons.parseAlphaedImage(data, tWidth << 3, tHeight << 3);
 	}
 }

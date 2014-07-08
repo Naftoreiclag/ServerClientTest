@@ -1,16 +1,23 @@
-package me.naftoreiclag.cliyent;
+package me.naftoreiclag.fileparsecommons;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
-public class Decal
+public class ParseCommons
 {
-	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
+	// collision data[][] -> ByteBuffer
+	// ByteBuffer -> collision data[][]
+
+	// ByteBuffer -> alphaed byte[][]
+	// ByteBuffer -> unalphaed byte[][]
+	// alphaed/unalphaed byte[][] -> Image
+
+	// Image -> alphaed byte[][]
+	// Image -> unalphaed byte[][]
+	// alphaed byte[][] -> ByteBuffer
+	// unalphaed byte[][] -> ByteBuffer
 	
-	public BufferedImage getImage()
-	{
-		return null;
-	}
+	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 
 	public static BufferedImage parseUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
