@@ -4,8 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class LoadedLandmarkProject
 {
@@ -67,6 +72,30 @@ public class LoadedLandmarkProject
 		}
 	}
 	
+	public LoadedLandmarkProject(File file)
+	{
+		byte[] data =
+		null;
+		try
+		{
+			data = Files.readAllBytes(file.toPath());
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ByteBuffer data2 = ByteBuffer.wrap(data);
+		
+		tWidth = data2.get();
+		tHeight = data2.get();
+		originX = data2.get();
+		originY = data2.get();
+		
+		collisionData = ParseCommons.collisionBufferToCollisionArray(data2, tWidth, tHeight);
+	}
+
 	public void save(File file) throws Exception
 	{
 		List<Byte> bites = new ArrayList<Byte>();
@@ -101,7 +130,7 @@ public class LoadedLandmarkProject
 		}
 		
 		// Color Data
-		WritingUtil.writeAlhaedImage(pixelData, pWidth, pHeight, bites);
+		ParseCommons.alhaedByteArrayToByteList(pixelData, pWidth, pHeight, bites);
 		
 		// Writing
 		byte[] data = new byte[bites.size()];

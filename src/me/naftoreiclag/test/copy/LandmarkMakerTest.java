@@ -18,6 +18,8 @@ public class LandmarkMakerTest extends JFrame
 	private LandmarkMakerTest() throws Exception
 	{
 		super("Pig Collision Demo");
+		
+		System.out.println("landmark mkaer test");
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(500, 500);

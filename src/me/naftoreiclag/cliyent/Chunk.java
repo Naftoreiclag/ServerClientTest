@@ -57,6 +57,6 @@ public class Chunk
 			}
 		}
 		
-		image = ParseCommons.parseChunkImage(data);
+		image = ParseCommons.unalphaedBufferToImage(data, 128, 128);
 	}
 }
