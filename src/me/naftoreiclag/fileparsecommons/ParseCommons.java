@@ -27,24 +27,40 @@ public class ParseCommons
 	
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 
-	// Returns an Image created from bytes read from an unalphaed Buffer
-	public static BufferedImage unalphaedBufferToImage(ByteBuffer data, int pWidth, int pHeight)
+	public static byte[][] readAlphaedArray(ByteBuffer data, int pWidth, int pHeight)
 	{
-		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-	
+		byte[][] ret = new byte[pWidth][pHeight];
+
 		int ehx = 0;
 		int why = 0;
-		
 		while(true)
 		{
 			byte colorStrip = data.get();
 			
-			byte color = (byte) (colorStrip & 0x07);
-			int width = (colorStrip & 0xff) >> 3;
+			byte color;
+			int width;
+			
+			if((colorStrip & 0x80) > 0)
+			{
+				color = 8;
+				width = colorStrip & 0x7F;
+			}
+			else
+			{
+				color = (byte) (colorStrip & 0x07);
+				width = (colorStrip & 0xff) >> 3;
+			}
 			
 			for(int x = 0; x < width; ++ x)
 			{
-				ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
+				if(color == 8)
+				{
+					ret[ehx ++][why] = 0;
+				}
+				else
+				{
+					ret[ehx ++][why] = color;
+				}
 	
 				if(ehx >= pWidth)
 				{
@@ -66,12 +82,52 @@ public class ParseCommons
 		
 		return ret;
 	}
-
+	
+	
+	public static byte[][] readUnalphaedArray(ByteBuffer data, int pWidth, int pHeight)
+	{
+		byte[][] ret = new byte[pWidth][pHeight];
+		
+		int ehx = 0;
+		int why = 0;
+		
+		while(true)
+		{
+			byte colorStrip = data.get();
+			
+			byte color = (byte) (colorStrip & 0x07);
+			int width = (colorStrip & 0xff) >> 3;
+			
+			for(int x = 0; x < width; ++ x)
+			{
+				ret[ehx ++][why] = color;
+	
+				if(ehx >= pWidth)
+				{
+					ehx = 0;
+					++ why;
+					
+					if(why >= pHeight)
+					{
+						break;
+					}
+				}
+			}
+			
+			if(why >= pHeight)
+			{
+				break;
+			}
+		}
+		
+		return ret;
+	}
+	
 	// Returns an Image created from bytes read from an alphaed Buffer
 	public static BufferedImage alphaedBufferToImage(ByteBuffer data, int pWidth, int pHeight)
 	{
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-
+	
 		int ehx = 0;
 		int why = 0;
 		while(true)
@@ -123,9 +179,50 @@ public class ParseCommons
 		
 		return ret;
 	}
+
+
+	// Returns an Image created from bytes read from an unalphaed Buffer
+	public static BufferedImage unalphaedBufferToImage(ByteBuffer data, int pWidth, int pHeight)
+	{
+		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
 	
+		int ehx = 0;
+		int why = 0;
+		
+		while(true)
+		{
+			byte colorStrip = data.get();
+			
+			byte color = (byte) (colorStrip & 0x07);
+			int width = (colorStrip & 0xff) >> 3;
+			
+			for(int x = 0; x < width; ++ x)
+			{
+				ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
+	
+				if(ehx >= pWidth)
+				{
+					ehx = 0;
+					++ why;
+					
+					if(why >= pHeight)
+					{
+						break;
+					}
+				}
+			}
+			
+			if(why >= pHeight)
+			{
+				break;
+			}
+		}
+		
+		return ret;
+	}
+
 	// Returns an alphaed byte[][] from an Image
-	public static byte[][] imageToAlphaedByteArray(BufferedImage image, int pWidth, int pHeight)
+	public static byte[][] imageToAlphaedArray(BufferedImage image, int pWidth, int pHeight)
 	{
 		byte[][] pixelData = new byte[pWidth][pHeight];
 
@@ -141,7 +238,7 @@ public class ParseCommons
 	}
 
 	// Returns an unalphaed byte[][] from an Image
-	public static byte[][] imageToUnalphaedByteArray(BufferedImage image, int pWidth, int pHeight)
+	public static byte[][] imageToUnalphaedArray(BufferedImage image, int pWidth, int pHeight)
 	{
 		byte[][] pixelData = new byte[pWidth][pHeight];
 
@@ -157,7 +254,7 @@ public class ParseCommons
 	}
 
 	// Appends an alphaed byte[][] to a Byte List
-	public static void alhaedByteArrayToByteList(byte[][] pixelData, int pWidth, int pHeight, List<Byte> bites)
+	public static void writeAlphaedByteArray(byte[][] pixelData, int pWidth, int pHeight, List<Byte> bites)
 	{
 		byte color = pixelData[0][0];
 		int size = 1;
@@ -208,7 +305,7 @@ public class ParseCommons
 	}
 
 	// Appends an unalphaed byte[][] to a Byte List
-	public static void unalhaedByteArrayToByteList(byte[][] pixelData, int pWidth, int pHeight, List<Byte> bites)
+	public static void writeUnalhaedByteArray(byte[][] pixelData, int pWidth, int pHeight, List<Byte> bites)
 	{
 		byte color = pixelData[0][0];
 		int size = 1;
@@ -237,47 +334,7 @@ public class ParseCommons
 		bites.add((byte) ((size << 3) + color));
 	}
 	
-	private static byte getByteFromRGB(int rgb)
-	{
-		if ((rgb & 0xFF000000) == 0) { return 8; }
-
-		rgb = rgb & 0x00FFFFFF;
-
-		if (rgb < pallete[1])
-		{
-			return 0;
-		}
-		else if (rgb < pallete[2])
-		{
-			return 1;
-		}
-		else if (rgb < pallete[3])
-		{
-			return 2;
-		}
-		else if (rgb < pallete[4])
-		{
-			return 3;
-		}
-		else if (rgb < pallete[5])
-		{
-			return 4;
-		}
-		else if (rgb < pallete[6])
-		{
-			return 5;
-		}
-		else if (rgb < pallete[7])
-		{
-			return 6;
-		}
-		else
-		{
-			return 7;
-		}
-	}
-
-	public static boolean[][] collisionBufferToCollisionArray(ByteBuffer data2, int tWidth, int tHeight)
+	public static boolean[][] readCollisionArray(ByteBuffer data2, int tWidth, int tHeight)
 	{
 		boolean[][] ret = new boolean[tWidth][tHeight];
 		
@@ -312,7 +369,7 @@ public class ParseCommons
 		return ret;
 	}
 	
-	public static void collisionArrayToByteList(boolean[][] collisionData, int tWidth, int tHeight, List<Byte> bites)
+	public static void writeCollisionArray(boolean[][] collisionData, int tWidth, int tHeight, List<Byte> bites)
 	{
 		int position = 0;
 		byte buildAByte = 0;
@@ -334,6 +391,46 @@ public class ParseCommons
 					position = 0;
 				}
 			}
+		}
+	}
+
+	private static byte getByteFromRGB(int rgb)
+	{
+		if ((rgb & 0xFF000000) == 0) { return 8; }
+	
+		rgb = rgb & 0x00FFFFFF;
+	
+		if (rgb < pallete[1])
+		{
+			return 0;
+		}
+		else if (rgb < pallete[2])
+		{
+			return 1;
+		}
+		else if (rgb < pallete[3])
+		{
+			return 2;
+		}
+		else if (rgb < pallete[4])
+		{
+			return 3;
+		}
+		else if (rgb < pallete[5])
+		{
+			return 4;
+		}
+		else if (rgb < pallete[6])
+		{
+			return 5;
+		}
+		else if (rgb < pallete[7])
+		{
+			return 6;
+		}
+		else
+		{
+			return 7;
 		}
 	}
 }

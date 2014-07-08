@@ -93,7 +93,7 @@ public class LoadedLandmarkProject
 		originX = data2.get();
 		originY = data2.get();
 		
-		collisionData = ParseCommons.collisionBufferToCollisionArray(data2, tWidth, tHeight);
+		collisionData = ParseCommons.readCollisionArray(data2, tWidth, tHeight);
 	}
 
 	public void save(File file) throws Exception
@@ -107,6 +107,7 @@ public class LoadedLandmarkProject
 
 		// Collision Data
 		
+		/*
 		int position = 0;
 		byte buildAByte = 0;
 		for(int ty = 0; ty < tHeight; ++ ty)
@@ -128,9 +129,12 @@ public class LoadedLandmarkProject
 				}
 			}
 		}
+		*/
+		
+		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		
 		// Color Data
-		ParseCommons.alhaedByteArrayToByteList(pixelData, pWidth, pHeight, bites);
+		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 		
 		// Writing
 		byte[] data = new byte[bites.size()];
