@@ -49,6 +49,6 @@ public class Landmark
 			}
 		}
 		
-		image = ParseCommons.alphaedBufferToImage(data, tWidth << 3, tHeight << 3);
+		image = ParseCommons.readAlphaedImage(data, tWidth << 3, tHeight << 3);
 	}
 }

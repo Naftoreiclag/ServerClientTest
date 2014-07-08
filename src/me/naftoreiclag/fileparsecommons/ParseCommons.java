@@ -83,7 +83,6 @@ public class ParseCommons
 		return ret;
 	}
 	
-	
 	public static byte[][] readUnalphaedArray(ByteBuffer data, int pWidth, int pHeight)
 	{
 		byte[][] ret = new byte[pWidth][pHeight];
@@ -124,97 +123,36 @@ public class ParseCommons
 	}
 	
 	// Returns an Image created from bytes read from an alphaed Buffer
-	public static BufferedImage alphaedBufferToImage(ByteBuffer data, int pWidth, int pHeight)
+	public static BufferedImage readAlphaedImage(ByteBuffer data, int pWidth, int pHeight)
 	{
-		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-	
-		int ehx = 0;
-		int why = 0;
-		while(true)
-		{
-			byte colorStrip = data.get();
-			
-			byte color;
-			int width;
-			
-			if((colorStrip & 0x80) > 0)
-			{
-				color = 8;
-				width = colorStrip & 0x7F;
-			}
-			else
-			{
-				color = (byte) (colorStrip & 0x07);
-				width = (colorStrip & 0xff) >> 3;
-			}
-			
-			for(int x = 0; x < width; ++ x)
-			{
-				if(color == 8)
-				{
-					ret.setRGB(ehx ++, why, 0);
-				}
-				else
-				{
-					ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
-				}
-	
-				if(ehx >= pWidth)
-				{
-					ehx = 0;
-					++ why;
-					
-					if(why >= pHeight)
-					{
-						break;
-					}
-				}
-			}
-			
-			if(why >= pHeight)
-			{
-				break;
-			}
-		}
-		
-		return ret;
+		return arrayToImage(readAlphaedArray(data, pWidth, pHeight), pWidth, pHeight);
 	}
 
 
 	// Returns an Image created from bytes read from an unalphaed Buffer
-	public static BufferedImage unalphaedBufferToImage(ByteBuffer data, int pWidth, int pHeight)
+	public static BufferedImage readUnalphaedImage(ByteBuffer data, int pWidth, int pHeight)
+	{
+		return arrayToImage(readUnalphaedArray(data, pWidth, pHeight), pWidth, pHeight);
+	}
+	
+	public static BufferedImage arrayToImage(byte[][] pixelData, int pWidth, int pHeight)
 	{
 		BufferedImage ret = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-	
-		int ehx = 0;
-		int why = 0;
 		
-		while(true)
+		for(int x = 0; x < pWidth; ++x)
 		{
-			byte colorStrip = data.get();
-			
-			byte color = (byte) (colorStrip & 0x07);
-			int width = (colorStrip & 0xff) >> 3;
-			
-			for(int x = 0; x < width; ++ x)
+			for(int y = 0; y < pHeight; ++y)
 			{
-				ret.setRGB(ehx ++, why, pallete[color] | 0xFF000000);
-	
-				if(ehx >= pWidth)
+				byte color = pixelData[x][y];
+				
+				if(color == 8)
 				{
-					ehx = 0;
-					++ why;
-					
-					if(why >= pHeight)
-					{
-						break;
-					}
+					ret.setRGB(x, y, 0);
 				}
-			}
-			
-			if(why >= pHeight)
-			{
-				break;
+				else
+				{
+					ret.setRGB(x, y, pallete[color] | 0xFF000000);
+				}
 			}
 		}
 		
