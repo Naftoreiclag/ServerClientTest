@@ -104,7 +104,6 @@ public class LoadedLandmarkProject
 		WritingUtil.writeAlhaedImage(pixelData, pWidth, pHeight, bites);
 		
 		// Writing
-
 		byte[] data = new byte[bites.size()];
 		for(int i = 0; i < bites.size(); ++ i)
 		{

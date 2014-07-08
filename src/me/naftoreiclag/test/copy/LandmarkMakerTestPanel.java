@@ -209,8 +209,26 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileSave(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
+		int returnVal = fileChooser.showOpenDialog(this);
 		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = fileChooser.getSelectedFile();
+			try
+			{
+				lp.save(file);
+			}
+			catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else
+		{
+			System.out.println("closed");
+		}
+		this.repaint();
 	}
 	
 	@Override
