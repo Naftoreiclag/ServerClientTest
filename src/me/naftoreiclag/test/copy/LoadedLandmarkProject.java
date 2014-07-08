@@ -1,6 +1,11 @@
 package me.naftoreiclag.test.copy;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoadedLandmarkProject
 {
@@ -11,6 +16,8 @@ public class LoadedLandmarkProject
 	int originY = 0;
 
 	BufferedImage displayImage;
+	
+	
 	
 	int tWidth;
 	int tHeight;
@@ -58,6 +65,56 @@ public class LoadedLandmarkProject
 				}
 			}
 		}
+	}
+	
+	public void save(File file) throws Exception
+	{
+		List<Byte> bites = new ArrayList<Byte>();
+		
+		bites.add((byte) tWidth);
+		bites.add((byte) tHeight);
+		bites.add((byte) originX);
+		bites.add((byte) originY);
+
+		// Collision Data
+		
+		int position = 0;
+		byte buildAByte = 0;
+		for(int ty = 0; ty < tHeight; ++ ty)
+		{
+			for(int tx = 0; tx < tWidth; ++ tx)
+			{
+				if(collisionData[tx][ty])
+				{
+					buildAByte = (byte) (buildAByte | (1 << position));
+				}
+				
+				++ position;
+				
+				if(position == 8)
+				{
+					bites.add(buildAByte);
+					
+					position = 0;
+				}
+			}
+		}
+		
+		// Color Data
+		WritingUtil.writeAlhaedImage(pixelData, pWidth, pHeight, bites);
+		
+		// Writing
+
+		byte[] data = new byte[bites.size()];
+		for(int i = 0; i < bites.size(); ++ i)
+		{
+			data[i] = bites.get(i);
+		}
+		
+		FileOutputStream fos;
+		fos = new FileOutputStream(file);
+		fos.write(data);
+		fos.close();
 	}
 	
 	public static byte getByteFromRGB(int rgb)

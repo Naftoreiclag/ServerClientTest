@@ -35,7 +35,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	boolean leftDown = false;
 	boolean rightDown = false;
 
-	int zoomLevel = 2;
+	int zoom = 2;
 	JLabel picLabel;
 	
 	public LandmarkMakerTestPanel() throws Exception
@@ -90,8 +90,8 @@ public class LandmarkMakerTestPanel extends JPanel
 		int x = e.getX();
 		int y = e.getY();
 		
-		x /= zoomLevel;
-		y /= zoomLevel;
+		x /= zoom;
+		y /= zoom;
 		
 		x = x >> 3;
 		y = y >> 3;
@@ -113,11 +113,35 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 		this.repaint();
 	}
+	
 	private void mPress(MouseEvent e)
 	{
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
 			leftDown = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2)
+		{
+			if (lp == null) { return; }
+			int x = e.getX();
+			int y = e.getY();
+
+			x /= zoom;
+			y /= zoom;
+
+			x = x >> 3;
+			y = y >> 3;
+
+			if (x >= lp.tWidth || y >= lp.tHeight)
+			{
+				System.out.println("ogaeroigjger" + x + ", " + y);
+				return;
+			}
+			
+			lp.originX = x;
+			lp.originY = y;
+			this.repaint();
+
 		}
 		if(e.getButton() == MouseEvent.BUTTON3)
 		{
@@ -168,6 +192,8 @@ public class LandmarkMakerTestPanel extends JPanel
 			}
 			
 			lp = new LoadedLandmarkProject(image);
+			
+			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}
 		else
 		{
@@ -202,10 +228,14 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 		BufferedImage img = lp.displayImage;
 		
-		g2.drawImage(img, 0, 0, img.getWidth() * zoomLevel, img.getHeight() * zoomLevel, null);
+		drawStuff(g2);
 		
-		drawLines(g2, zoomLevel);
-		drawBoxes(g2, zoomLevel);
+		g2.drawImage(img, 0, 0, img.getWidth() * zoom, img.getHeight() * zoom, null);
+		
+		drawThings(g2);
+		
+		drawLines(g2);
+		drawBoxes(g2);
 	}
 	
 	private AlphaComposite makeAlphaComposite(float alpha)
@@ -214,7 +244,22 @@ public class LandmarkMakerTestPanel extends JPanel
 		return AlphaComposite.getInstance(type, alpha);
 	}
 	
-	public void drawBoxes(Graphics2D g2, int scale)
+	public void drawStuff(Graphics2D g2)
+	{
+
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, lp.pWidth * zoom * 5, lp.pHeight * zoom * 5);
+		g2.setColor(Color.YELLOW);
+		g2.fillRect(0, 0, lp.pWidth * zoom, lp.pHeight * zoom);
+	}
+	
+	public void drawThings(Graphics2D g2)
+	{
+		g2.setColor(Color.RED);
+		g2.drawRect(lp.originX * 8 * zoom, lp.originY * 8 * zoom, 8 * zoom, 8 * zoom);
+	}
+	
+	public void drawBoxes(Graphics2D g2)
 	{
 		Composite originalComposite = g2.getComposite();
 
@@ -228,7 +273,7 @@ public class LandmarkMakerTestPanel extends JPanel
 			{
 				if(lp.collisionData[x][y])
 				{
-					g2.fillRect(x * 8 * scale, y * 8 * scale, 8 * scale, 8 * scale);
+					g2.fillRect(x * 8 * zoom, y * 8 * zoom, 8 * zoom, 8 * zoom);
 				}
 			}
 		}
@@ -237,7 +282,7 @@ public class LandmarkMakerTestPanel extends JPanel
 		g2.setComposite(originalComposite);
 	}
 	
-	public void drawLines(Graphics2D g2, int scale)
+	public void drawLines(Graphics2D g2)
 	{
 		Composite originalComposite = g2.getComposite();
 
@@ -246,24 +291,24 @@ public class LandmarkMakerTestPanel extends JPanel
 		g2.setColor(Color.BLUE);
 		for(int sx = 1; sx < lp.tWidth; ++sx)
 		{
-			int ssx = (sx << 3) * scale;
+			int ssx = (sx << 3) * zoom;
 
 			// vert lines
-			g2.drawLine(ssx, 0, ssx, lp.pWidth * scale);
+			g2.drawLine(ssx, 0, ssx, lp.pHeight * zoom);
 		}
 
 		for(int sy = 1; sy < lp.tHeight; ++sy)
 		{
 
-			int ssy = (sy << 3) * scale;
+			int ssy = (sy << 3) * zoom;
 
 			// horz lines
-			g2.drawLine(0, ssy, lp.pHeight * scale, ssy);
+			g2.drawLine(0, ssy, lp.pWidth * zoom, ssy);
 		}
 
 		g2.setColor(Color.RED);
 
-		g2.drawRect(0, 0, lp.pWidth * scale, lp.pHeight * scale);
+		g2.drawRect(0, 0, lp.pWidth * zoom, lp.pHeight * zoom);
 
 		g2.setComposite(originalComposite);
 	}
