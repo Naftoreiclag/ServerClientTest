@@ -168,14 +168,6 @@ public class LandmarkMakerTestPanel extends JPanel
 			}
 			
 			lp = new LoadedLandmarkProject(image);
-
-			this.setSize(lp.pWidth * 2, lp.pHeight * 2);
-			/*
-			if(scrollContainer != null)
-			{
-				scrollContainer.setPreferredSize(new Dimension(lp.pWidth, lp.pHeight));
-			}
-			*/
 		}
 		else
 		{
@@ -212,8 +204,8 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 		g2.drawImage(img, 0, 0, img.getWidth() * zoomLevel, img.getHeight() * zoomLevel, null);
 		
-		drawLines(g2, lp.cWidth, lp.cHeight, zoomLevel);
-		drawBoxes(g2, lp.cWidth, lp.cHeight, zoomLevel);
+		drawLines(g2, zoomLevel);
+		drawBoxes(g2, zoomLevel);
 	}
 	
 	private AlphaComposite makeAlphaComposite(float alpha)
@@ -222,7 +214,7 @@ public class LandmarkMakerTestPanel extends JPanel
 		return AlphaComposite.getInstance(type, alpha);
 	}
 	
-	public void drawBoxes(Graphics2D g2, int cWidth, int cHeight, int scale)
+	public void drawBoxes(Graphics2D g2, int scale)
 	{
 		Composite originalComposite = g2.getComposite();
 
@@ -245,43 +237,34 @@ public class LandmarkMakerTestPanel extends JPanel
 		g2.setComposite(originalComposite);
 	}
 	
-	public void drawLines(Graphics2D g2, int cWidth, int cHeight, int scale)
+	public void drawLines(Graphics2D g2, int scale)
 	{
-		int ox = 0;
-		int oy = 0;
-		
 		Composite originalComposite = g2.getComposite();
-		
+
 		g2.setComposite(makeAlphaComposite(0.2f));
-		
-		for(int cx = 0; cx < cWidth; ++ cx)
+
+		g2.setColor(Color.BLUE);
+		for(int sx = 1; sx < lp.tWidth; ++sx)
 		{
-			for(int cy = 0; cy < cHeight; ++ cy)
-			{
-				int px = ox + ((cx << 7) * scale);
-				int py = oy + ((cy << 7) * scale);
-				
-				int wid = 128 * scale;
+			int ssx = (sx << 3) * scale;
 
-				g2.setColor(Color.BLUE);
-				
-				for(int sx = 1; sx < 16; ++ sx)
-				{
-					int ssx = (sx << 3) * scale;
-					
-					
-					// horz lines
-					g2.drawLine(px, py + ssx, px + wid, py + ssx);
-					
-					// vert lines
-					g2.drawLine(px + ssx, py, px + ssx, py + wid);
-				}
-				g2.setColor(Color.RED);
-
-				g2.drawRect(px, py, px + wid, py + wid);
-			}
+			// vert lines
+			g2.drawLine(ssx, 0, ssx, lp.pWidth * scale);
 		}
-		
+
+		for(int sy = 1; sy < lp.tHeight; ++sy)
+		{
+
+			int ssy = (sy << 3) * scale;
+
+			// horz lines
+			g2.drawLine(0, ssy, lp.pHeight * scale, ssy);
+		}
+
+		g2.setColor(Color.RED);
+
+		g2.drawRect(0, 0, lp.pWidth * scale, lp.pHeight * scale);
+
 		g2.setComposite(originalComposite);
 	}
 
