@@ -45,17 +45,6 @@ public class LandmarkMakerTest extends JFrame
 		});
 		fileMenu.add(fileMenuNew);
 
-		JMenuItem fileMenuCFI = new JMenuItem("Create from image");
-		fileMenuCFI.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				panel.onFileCFIPressed(e);
-			}
-		});
-		fileMenu.add(fileMenuCFI);
-
 		JMenuItem fileMenuOpen = new JMenuItem("Open");
 		fileMenuOpen.addActionListener(new ActionListener()
 		{
@@ -80,6 +69,17 @@ public class LandmarkMakerTest extends JFrame
 
 		JMenu editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
+		
+		JMenuItem fileMenuCFI = new JMenuItem("Add Landmark");
+		fileMenuCFI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				panel.onFileCFIPressed(e);
+			}
+		});
+		editMenu.add(fileMenuCFI);
 
 		JMenu aboutMenu = new JMenu("About");
 		menuBar.add(aboutMenu);
