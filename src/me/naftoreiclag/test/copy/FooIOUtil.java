@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 
 public class FooIOUtil
 {
-	public static ByteBuffer loadBufferFromFile(File file)
+	public static ByteBuffer readBufferFromFile(File file)
 	{
 		byte[] data = null;
 		try
@@ -24,7 +24,7 @@ public class FooIOUtil
 		return ByteBuffer.wrap(data);
 	}
 	
-	public static BufferedImage loadImageFromFile(File file)
+	public static BufferedImage readImageFromFile(File file)
 	{
 		BufferedImage image = null;
 		

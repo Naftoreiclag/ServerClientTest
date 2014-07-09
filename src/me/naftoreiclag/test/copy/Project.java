@@ -1,5 +1,6 @@
 package me.naftoreiclag.test.copy;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -29,4 +30,8 @@ public abstract class Project
 	}
 
 	public abstract void save(File file) throws IOException;
+
+	public void draw(Graphics2D g2, int zoom)
+	{
+	}
 }

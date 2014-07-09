@@ -32,7 +32,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	
 	JScrollPane scrollContainer = null;
 	
-	Project lp = null;
+	Project project = null;
 	
 	boolean leftDown = false;
 	boolean rightDown = false;
@@ -84,7 +84,7 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	private void mMove(MouseEvent e)
 	{
-		if(lp == null)
+		if(project == null)
 		{
 			return;
 		}
@@ -98,18 +98,18 @@ public class LandmarkMakerTestPanel extends JPanel
 		x = x >> 3;
 		y = y >> 3;
 		
-		if(x >= lp.tWidth || y >= lp.tHeight)
+		if(x >= project.tWidth || y >= project.tHeight)
 		{
 			return;
 		}
 		
 		if(leftDown)
 		{
-			lp.collisionData[x][y] = true;
+			project.collisionData[x][y] = true;
 		}
 		else if(rightDown)
 		{
-			lp.collisionData[x][y] = false;
+			project.collisionData[x][y] = false;
 		}
 		
 		this.repaint();
@@ -123,7 +123,7 @@ public class LandmarkMakerTestPanel extends JPanel
 		}
 		if(e.getButton() == MouseEvent.BUTTON2)
 		{
-			if (lp == null) { return; }
+			if (project == null) { return; }
 			int x = e.getX();
 			int y = e.getY();
 
@@ -133,7 +133,7 @@ public class LandmarkMakerTestPanel extends JPanel
 			x = x >> 3;
 			y = y >> 3;
 
-			if (x >= lp.tWidth || y >= lp.tHeight)
+			if (x >= project.tWidth || y >= project.tHeight)
 			{
 				System.out.println("ogaeroigjger" + x + ", " + y);
 				return;
@@ -169,7 +169,7 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileNew(ActionEvent e)
 	{
-		lp = null;
+		project = null;
 		this.repaint();
 	}
 
@@ -213,24 +213,26 @@ public class LandmarkMakerTestPanel extends JPanel
 		{
 			File file = fileChooser.getSelectedFile();
 			
-			if(file.getName().endsWith(".l"))
+			if(file.getName().endsWith(".landmark"))
 			{
-				lp = new LandmarkProject(FooIOUtil.loadBufferFromFile(file));
+				project = new LandmarkProject(FooIOUtil.readBufferFromFile(file));
 			}
-			else if(file.getName().endsWith(".l.png"))
+			else if(file.getName().endsWith(".landmark.png"))
 			{
-				lp = new LandmarkProject(FooIOUtil.loadImageFromFile(file));
+				project = new LandmarkProject(FooIOUtil.readImageFromFile(file));
 			}
-			else if(file.getName().endsWith(".c.png"))
+			else if(file.getName().endsWith(".area.png"))
 			{
-				lp = new AreaProject(FooIOUtil.loadBufferFromFile(file));
+				project = new AreaProject(FooIOUtil.readBufferFromFile(file));
 			}
-			else if(file.getName().endsWith(".c"))
+			else if(file.getName().endsWith(".area"))
 			{
-				lp = new AreaProject(FooIOUtil.loadImageFromFile(file));
+				project = new AreaProject(FooIOUtil.readImageFromFile(file));
 			}
+			
+			System.out.println(file.getName());
 					
-			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
+			this.setSize(project.pWidth * zoom, project.pHeight * zoom);
 		}
 		else
 		{
@@ -248,7 +250,7 @@ public class LandmarkMakerTestPanel extends JPanel
 			File file = fileChooser.getSelectedFile();
 			try
 			{
-				lp.save(file);
+				project.save(file);
 			}
 			catch (Exception e1)
 			{
@@ -266,101 +268,16 @@ public class LandmarkMakerTestPanel extends JPanel
 	@Override
 	public void paint(Graphics g)
 	{
-		
 		Graphics2D g2 = (Graphics2D) g;
 		
 		g2.setBackground(Color.WHITE);
 		
-		if(lp == null)
+		if(project == null)
 		{
 			return;
 		}
 		
-		BufferedImage img = lp.displayImage;
-		
-		drawStuff(g2);
-		
-		g2.drawImage(img, 0, 0, img.getWidth() * zoom, img.getHeight() * zoom, null);
-		
-		drawThings(g2);
-		
-		drawLines(g2);
-		drawBoxes(g2);
-	}
-	
-	private AlphaComposite makeAlphaComposite(float alpha)
-	{
-		int type = AlphaComposite.SRC_OVER;
-		return AlphaComposite.getInstance(type, alpha);
-	}
-	
-	public void drawStuff(Graphics2D g2)
-	{
-
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, lp.pWidth * zoom * 5, lp.pHeight * zoom * 5);
-		g2.setColor(Color.YELLOW);
-		g2.fillRect(0, 0, lp.pWidth * zoom, lp.pHeight * zoom);
-	}
-	
-	public void drawThings(Graphics2D g2)
-	{
-		g2.setColor(Color.RED);
-		//g2.drawRect(lp.originX * 8 * zoom, lp.originY * 8 * zoom, 8 * zoom, 8 * zoom);
-	}
-	
-	public void drawBoxes(Graphics2D g2)
-	{
-		Composite originalComposite = g2.getComposite();
-
-		g2.setComposite(makeAlphaComposite(0.2f));
-		
-		g2.setColor(Color.RED);
-		
-		for(int x = 0; x < lp.tWidth; ++ x)
-		{
-			for(int y = 0; y < lp.tHeight; ++ y)
-			{
-				if(lp.collisionData[x][y])
-				{
-					g2.fillRect(x * 8 * zoom, y * 8 * zoom, 8 * zoom, 8 * zoom);
-				}
-			}
-		}
-		
-		
-		g2.setComposite(originalComposite);
-	}
-	
-	public void drawLines(Graphics2D g2)
-	{
-		Composite originalComposite = g2.getComposite();
-
-		g2.setComposite(makeAlphaComposite(0.2f));
-
-		g2.setColor(Color.BLUE);
-		for(int sx = 1; sx < lp.tWidth; ++sx)
-		{
-			int ssx = (sx << 3) * zoom;
-
-			// vert lines
-			g2.drawLine(ssx, 0, ssx, lp.pHeight * zoom);
-		}
-
-		for(int sy = 1; sy < lp.tHeight; ++sy)
-		{
-
-			int ssy = (sy << 3) * zoom;
-
-			// horz lines
-			g2.drawLine(0, ssy, lp.pWidth * zoom, ssy);
-		}
-
-		g2.setColor(Color.RED);
-
-		g2.drawRect(0, 0, lp.pWidth * zoom, lp.pHeight * zoom);
-
-		g2.setComposite(originalComposite);
+		project.draw(g2, zoom);
 	}
 
 	public void giveScrolPaneAccess(JScrollPane scrollContainer)

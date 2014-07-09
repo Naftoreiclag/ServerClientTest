@@ -1,5 +1,9 @@
 package me.naftoreiclag.test.copy;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -63,5 +67,94 @@ public class LandmarkProject extends Project
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 
 		FooIOUtil.writeListToFile(file, bites);
+	}
+	
+	//////////////////////////////////////////////////////////////
+	
+	@Override
+	public void draw(Graphics2D g2, int zoom)
+	{
+		drawStuff(g2, zoom);
+
+		g2.drawImage(displayImage, 0, 0, pWidth * zoom, pHeight * zoom, null);
+
+		drawThings(g2, zoom);
+
+		drawLines(g2, zoom);
+		drawBoxes(g2, zoom);
+	}
+
+	private AlphaComposite makeAlphaComposite(float alpha)
+	{
+		int type = AlphaComposite.SRC_OVER;
+		return AlphaComposite.getInstance(type, alpha);
+	}
+
+	public void drawStuff(Graphics2D g2, int zoom)
+	{
+
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, pWidth * zoom * 5, pHeight * zoom * 5);
+		g2.setColor(Color.YELLOW);
+		g2.fillRect(0, 0, pWidth * zoom, pHeight * zoom);
+	}
+
+	public void drawThings(Graphics2D g2, int zoom)
+	{
+		g2.setColor(Color.RED);
+		g2.drawRect(originX * 8 * zoom, originY * 8 * zoom, 8 * zoom, 8 * zoom);
+	}
+
+	public void drawBoxes(Graphics2D g2, int zoom)
+	{
+		Composite originalComposite = g2.getComposite();
+
+		g2.setComposite(makeAlphaComposite(0.2f));
+
+		g2.setColor(Color.RED);
+
+		for (int x = 0; x < tWidth; ++x)
+		{
+			for (int y = 0; y < tHeight; ++y)
+			{
+				if (collisionData[x][y])
+				{
+					g2.fillRect(x * 8 * zoom, y * 8 * zoom, 8 * zoom, 8 * zoom);
+				}
+			}
+		}
+
+		g2.setComposite(originalComposite);
+	}
+
+	public void drawLines(Graphics2D g2, int zoom)
+	{
+		Composite originalComposite = g2.getComposite();
+
+		g2.setComposite(makeAlphaComposite(0.2f));
+
+		g2.setColor(Color.BLUE);
+		for (int sx = 1; sx < tWidth; ++sx)
+		{
+			int ssx = (sx << 3) * zoom;
+
+			// vert lines
+			g2.drawLine(ssx, 0, ssx, pHeight * zoom);
+		}
+
+		for (int sy = 1; sy < tHeight; ++sy)
+		{
+
+			int ssy = (sy << 3) * zoom;
+
+			// horz lines
+			g2.drawLine(0, ssy, pWidth * zoom, ssy);
+		}
+
+		g2.setColor(Color.RED);
+
+		g2.drawRect(0, 0, pWidth * zoom, pHeight * zoom);
+
+		g2.setComposite(originalComposite);
 	}
 }
