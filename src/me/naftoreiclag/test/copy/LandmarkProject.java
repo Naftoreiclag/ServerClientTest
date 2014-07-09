@@ -2,7 +2,6 @@ package me.naftoreiclag.test.copy;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -17,8 +16,8 @@ public class LandmarkProject extends Project
 	byte[][] pixelData;
 	boolean[][] collisionData;
 	
-	int originX = 0;
-	int originY = 0;
+	int originX;
+	int originY;
 
 	BufferedImage displayImage;
 	
@@ -28,59 +27,43 @@ public class LandmarkProject extends Project
 	int pWidth;
 	int pHeight;
 	
-	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
-
 	public LandmarkProject(BufferedImage image)
 	{
 		super(image);
 		
 		tWidth = image.getWidth() >> 3;
 		tHeight = image.getHeight() >> 3;
+		originX = 0;
+		originY = 0;
 		pWidth = tWidth << 3;
 		pHeight = tHeight << 3;
+		
 		collisionData = new boolean[tWidth][tHeight];
 		
 		pixelData = ParseCommons.convertImageToAlphaedArray(image, pWidth, pHeight);
+		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
 	}
 	
-	public LandmarkProject(File file)
+	public LandmarkProject(ByteBuffer buffer)
 	{
-		super(file);
-		byte[] data = null;
-		try
-		{
-			data = Files.readAllBytes(file.toPath());
-		}
-		catch (IOException e) { e.printStackTrace(); }
-		
-		System.out.println(data.length);
-		
-		ByteBuffer buffer = ByteBuffer.wrap(data);
+		super(buffer);
 		
 		tWidth = buffer.get();
 		tHeight = buffer.get();
 		originX = buffer.get();
 		originY = buffer.get();
-		
-		System.out.println(tWidth + " , " + tHeight);
-		System.out.println(originX + " , " + originY);
-		
 		pWidth = tWidth << 3;
 		pHeight = tHeight << 3;
-		System.out.println(pWidth + " , " + pHeight);
-		System.out.println(originX + " , " + originY);
-		System.out.println("============");
 		
 		collisionData = ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
+		
 		pixelData = ParseCommons.readAlphaedArray(buffer, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
-
-		System.out.println("loaded " + data.length);
 	}
 
-	public void save(File file) throws Exception
+	public void save(File file) throws IOException
 	{
 		List<Byte> bites = new ArrayList<Byte>();
 		
@@ -105,45 +88,5 @@ public class LandmarkProject extends Project
 		fos.close();
 		
 		System.out.println("saved " + data.length);
-	}
-	
-	public static byte getByteFromRGB(int rgb)
-	{
-		if ((rgb & 0xFF000000) == 0) { return 8; }
-
-		rgb = rgb & 0x00FFFFFF;
-
-		if (rgb < pallete[1])
-		{
-			return 0;
-		}
-		else if (rgb < pallete[2])
-		{
-			return 1;
-		}
-		else if (rgb < pallete[3])
-		{
-			return 2;
-		}
-		else if (rgb < pallete[4])
-		{
-			return 3;
-		}
-		else if (rgb < pallete[5])
-		{
-			return 4;
-		}
-		else if (rgb < pallete[6])
-		{
-			return 5;
-		}
-		else if (rgb < pallete[7])
-		{
-			return 6;
-		}
-		else
-		{
-			return 7;
-		}
 	}
 }

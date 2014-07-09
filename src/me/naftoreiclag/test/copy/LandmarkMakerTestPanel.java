@@ -15,6 +15,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -208,9 +210,22 @@ public class LandmarkMakerTestPanel extends JPanel
 		if(returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = fileChooser.getSelectedFile();
-			lp = new Project(file);
+			
+			byte[] data = null;
+			try
+			{
+				data = Files.readAllBytes(file.toPath());
+			}
+			catch (IOException e2) { e2.printStackTrace(); }
+			
+			System.out.println(data.length);
+			
+			ByteBuffer buffer = ByteBuffer.wrap(data);
+			
+			
+			lp = new LandmarkProject(buffer);
 					
-					this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
+			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}
 		else
 		{
