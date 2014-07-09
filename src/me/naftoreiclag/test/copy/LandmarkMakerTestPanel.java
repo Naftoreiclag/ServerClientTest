@@ -30,7 +30,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	
 	JScrollPane scrollContainer = null;
 	
-	LoadedLandmarkProject lp = null;
+	Project lp = null;
 	
 	boolean leftDown = false;
 	boolean rightDown = false;
@@ -190,7 +190,7 @@ public class LandmarkMakerTestPanel extends JPanel
 				e2.printStackTrace();
 			}
 			
-			lp = new LoadedLandmarkProject(image);
+			lp = new Project(image);
 			
 			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}
@@ -208,7 +208,7 @@ public class LandmarkMakerTestPanel extends JPanel
 		if(returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = fileChooser.getSelectedFile();
-			lp = new LoadedLandmarkProject(file);
+			lp = new Project(file);
 					
 					this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}

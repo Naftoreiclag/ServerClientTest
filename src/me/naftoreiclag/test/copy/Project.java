@@ -12,7 +12,7 @@ import java.util.List;
 
 import me.naftoreiclag.fileparsecommons.ParseCommons;
 
-public class LoadedLandmarkProject extends Project
+public class Project
 {
 	byte[][] pixelData;
 	boolean[][] collisionData;
@@ -30,10 +30,8 @@ public class LoadedLandmarkProject extends Project
 	
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 
-	public LoadedLandmarkProject(BufferedImage image)
+	public Project(BufferedImage image)
 	{
-		super(image);
-		
 		tWidth = image.getWidth() >> 3;
 		tHeight = image.getHeight() >> 3;
 		pWidth = tWidth << 3;
@@ -44,9 +42,8 @@ public class LoadedLandmarkProject extends Project
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
 	}
 	
-	public LoadedLandmarkProject(File file)
+	public Project(File file)
 	{
-		super(file);
 		byte[] data = null;
 		try
 		{

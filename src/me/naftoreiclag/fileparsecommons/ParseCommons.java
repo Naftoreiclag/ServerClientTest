@@ -11,15 +11,12 @@ public class ParseCommons
 	public static boolean[][] readCollisionArray(ByteBuffer buffer, int tWidth, int tHeight)
 	{
 		boolean[][] returnVal = new boolean[tWidth][tHeight];
-
-		int byteCount = 0;
 		
 		int ehx = 0;
 		int why = 0;
 		while(true)
 		{
 			byte eightTiles = buffer.get();
-			++ byteCount;
 			
 			for(int i = 0; i < 8; ++ i)
 			{
@@ -42,8 +39,6 @@ public class ParseCommons
 				break;
 			}
 		}
-		
-		System.out.println("read" + byteCount + " ybtes");
 		
 		return returnVal;
 	}
@@ -141,8 +136,6 @@ public class ParseCommons
 		byte buildAByte = 0;
 		int position = 0;
 		
-		int byteCount = 0;
-		
 		for(int ty = 0; ty < tHeight; ++ ty)
 		{
 			for(int tx = 0; tx < tWidth; ++ tx)
@@ -157,14 +150,11 @@ public class ParseCommons
 				if(position == 8 || (tx == tWidth - 1 && ty == tHeight - 1))
 				{
 					bites.add(buildAByte);
-					byteCount ++;
 					buildAByte = 0;
 					position = 0;
 				}
 			}
 		}
-		
-		System.out.println("wrote " + byteCount + "bytes ");
 	}
 
 	// Appends an alphaed byte[][] to a Byte List
