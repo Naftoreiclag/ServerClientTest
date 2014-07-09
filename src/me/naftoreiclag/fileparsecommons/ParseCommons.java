@@ -22,19 +22,19 @@ public class ParseCommons
 			{
 				ret[colX ++][colY] = (eightTiles & (1 << i)) > 0;
 				
-				if(colX >= 16)
+				if(colX >= tWidth)
 				{
 					colX = 0;
 					++ colY;
 					
-					if(colY >= 16)
+					if(colY >= tHeight)
 					{
 						break;
 					}
 				}
 			}
 			
-			if(colY >= 16)
+			if(colY >= tHeight)
 			{
 				break;
 			}
@@ -45,12 +45,13 @@ public class ParseCommons
 
 	public static byte[][] readAlphaedArray(ByteBuffer data, int pWidth, int pHeight)
 	{
-		byte[][] ret = new byte[pWidth][pHeight];
+		byte[][] returnVal = new byte[pWidth][pHeight];
 
 		int ehx = 0;
 		int why = 0;
 		while(true)
 		{
+			System.out.println(ehx + ", " + why);
 			byte colorStrip = data.get();
 			
 			byte color;
@@ -69,14 +70,7 @@ public class ParseCommons
 			
 			for(int x = 0; x < width; ++ x)
 			{
-				if(color == 8)
-				{
-					ret[ehx ++][why] = 0;
-				}
-				else
-				{
-					ret[ehx ++][why] = color;
-				}
+				returnVal[ehx ++][why] = color;
 	
 				if(ehx >= pWidth)
 				{
@@ -96,7 +90,7 @@ public class ParseCommons
 			}
 		}
 		
-		return ret;
+		return returnVal;
 	}
 	
 	public static byte[][] readUnalphaedArray(ByteBuffer data, int pWidth, int pHeight)
@@ -140,8 +134,8 @@ public class ParseCommons
 	
 	public static void writeCollisionArray(boolean[][] collisionData, int tWidth, int tHeight, List<Byte> bites)
 	{
-		int position = 0;
 		byte buildAByte = 0;
+		int position = 0;
 		for(int ty = 0; ty < tHeight; ++ ty)
 		{
 			for(int tx = 0; tx < tWidth; ++ tx)
@@ -156,7 +150,7 @@ public class ParseCommons
 				if(position == 8)
 				{
 					bites.add(buildAByte);
-					
+					buildAByte = 0;
 					position = 0;
 				}
 			}
@@ -286,13 +280,13 @@ public class ParseCommons
 			{
 				byte color = pixelData[x][y];
 				
-				if(color == 8)
+				if(color < 8)
 				{
-					ret.setRGB(x, y, 0);
+					ret.setRGB(x, y, pallete[color] | 0xFF000000);
 				}
 				else
 				{
-					ret.setRGB(x, y, pallete[color] | 0xFF000000);
+					ret.setRGB(x, y, 0);
 				}
 			}
 		}

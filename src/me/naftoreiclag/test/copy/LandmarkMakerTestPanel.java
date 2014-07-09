@@ -98,7 +98,6 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 		if(x >= lp.tWidth || y >= lp.tHeight)
 		{
-			System.out.println("ogaeroigjger" + x + ", " + y);
 			return;
 		}
 		
@@ -168,8 +167,8 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileNew(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
-		
+		lp = null;
+		this.repaint();
 	}
 
 	public void onFileCFIPressed(ActionEvent e)
@@ -204,12 +203,25 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileOpen(ActionEvent e)
 	{
+		int returnVal = fileChooser.showOpenDialog(this);
 		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = fileChooser.getSelectedFile();
+			lp = new LoadedLandmarkProject(file);
+					
+					this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
+		}
+		else
+		{
+			System.out.println("closed");
+		}
+		this.repaint();
 	}
 
 	public void onFileSave(ActionEvent e)
 	{
-		int returnVal = fileChooser.showOpenDialog(this);
+		int returnVal = fileChooser.showSaveDialog(this);
 		
 		if(returnVal == JFileChooser.APPROVE_OPTION)
 		{

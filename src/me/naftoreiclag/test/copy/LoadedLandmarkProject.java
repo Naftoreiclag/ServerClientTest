@@ -22,8 +22,6 @@ public class LoadedLandmarkProject
 
 	BufferedImage displayImage;
 	
-	
-	
 	int tWidth;
 	int tHeight;
 	
@@ -36,64 +34,47 @@ public class LoadedLandmarkProject
 	{
 		tWidth = image.getWidth() >> 3;
 		tHeight = image.getHeight() >> 3;
-		collisionData = new boolean[tWidth][tHeight];
-		System.out.println("New projected loaded with " + tWidth + " by " + tHeight);
 		pWidth = tWidth << 3;
 		pHeight = tHeight << 3;
-		System.out.println("New projected loaded with " + pWidth + " by " + pHeight);
+		collisionData = new boolean[tWidth][tHeight];
 		
-		pixelData = new byte[pWidth][pHeight];
-
-		for(int x = 0; x < pWidth; ++x)
-		{
-			for(int y = 0; y < pHeight; ++y)
-			{
-				pixelData[x][y] = getByteFromRGB(image.getRGB(x, y));
-			}
-		}
-		
-		displayImage = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
-		
-		for(int x = 0; x < pWidth; ++x)
-		{
-			for(int y = 0; y < pHeight; ++y)
-			{
-				byte color = pixelData[x][y];
-
-				if(color < 8)
-				{
-					displayImage.setRGB(x, y, pallete[color] | 0xFF000000);
-				}
-				else
-				{
-					displayImage.setRGB(x, y, 0);
-				}
-			}
-		}
+		pixelData = ParseCommons.convertImageToAlphaedArray(image, pWidth, pHeight);
+		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
 	}
 	
 	public LoadedLandmarkProject(File file)
 	{
-		byte[] data =
-		null;
+		byte[] data = null;
 		try
 		{
 			data = Files.readAllBytes(file.toPath());
 		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		catch (IOException e) { e.printStackTrace(); }
 		
-		ByteBuffer data2 = ByteBuffer.wrap(data);
+		System.out.println(data.length);
 		
-		tWidth = data2.get();
-		tHeight = data2.get();
-		originX = data2.get();
-		originY = data2.get();
+		ByteBuffer buffer = ByteBuffer.wrap(data);
 		
-		collisionData = ParseCommons.readCollisionArray(data2, tWidth, tHeight);
+		tWidth = buffer.get();
+		tHeight = buffer.get();
+		originX = buffer.get();
+		originY = buffer.get();
+		
+		System.out.println(tWidth + " , " + tHeight);
+		System.out.println(originX + " , " + originY);
+		
+		pWidth = tWidth << 3;
+		pHeight = tHeight << 3;
+		System.out.println(pWidth + " , " + pHeight);
+		System.out.println(originX + " , " + originY);
+		System.out.println("============");
+		
+		collisionData = new boolean[tWidth][tHeight];//ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
+		pixelData = ParseCommons.readAlphaedArray(buffer, pWidth, pHeight);
+		
+		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
+
+		System.out.println("loaded " + data.length);
 	}
 
 	public void save(File file) throws Exception
@@ -105,35 +86,7 @@ public class LoadedLandmarkProject
 		bites.add((byte) originX);
 		bites.add((byte) originY);
 
-		// Collision Data
-		
-		/*
-		int position = 0;
-		byte buildAByte = 0;
-		for(int ty = 0; ty < tHeight; ++ ty)
-		{
-			for(int tx = 0; tx < tWidth; ++ tx)
-			{
-				if(collisionData[tx][ty])
-				{
-					buildAByte = (byte) (buildAByte | (1 << position));
-				}
-				
-				++ position;
-				
-				if(position == 8)
-				{
-					bites.add(buildAByte);
-					
-					position = 0;
-				}
-			}
-		}
-		*/
-		
-		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
-		
-		// Color Data
+		//ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 		
 		// Writing
@@ -147,6 +100,8 @@ public class LoadedLandmarkProject
 		fos = new FileOutputStream(file);
 		fos.write(data);
 		fos.close();
+		
+		System.out.println("saved " + data.length);
 	}
 	
 	public static byte getByteFromRGB(int rgb)
