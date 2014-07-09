@@ -11,12 +11,18 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class AreaProject extends Project
 {
+	Map<Integer, LandmarkProject> landmarks = new HashMap<Integer, LandmarkProject>();
+	
+	int numLandmarks;
+	
 	int cWidth;
 	int cHeight;
 	
@@ -30,9 +36,8 @@ public class AreaProject extends Project
 		tHeight = cHeight << 4;
 		pWidth = cWidth << 7;
 		pHeight = cHeight << 7;
-		
+		numLandmarks = 0;
 		collisionData = new boolean[tWidth][tHeight];
-		
 		pixelData = ParseCommons.convertImageToUnalphaedArray(image, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
@@ -48,26 +53,36 @@ public class AreaProject extends Project
 		tHeight = cHeight << 4;
 		pWidth = cWidth << 7;
 		pHeight = cHeight << 7;
-		
+		numLandmarks = buffer.get();
 		collisionData = ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
-		
 		pixelData = ParseCommons.readUnalphaedArray(buffer, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
+		
+		for(int i = 0; i < numLandmarks; ++ i)
+		{
+			landmarks.put(i, new LandmarkProject(buffer));
+		}
+	}
+	
+	public void addLandmark(LandmarkProject lp)
+	{
+		landmarks.put(numLandmarks ++, lp);
 	}
 
 	@Override
-	public void save(File file) throws IOException
+	public void write(List<Byte> bites)
 	{
-		List<Byte> bites = new ArrayList<Byte>();
-		
 		bites.add((byte) cWidth);
 		bites.add((byte) cHeight);
-
+		bites.add((byte) numLandmarks);
 		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 		
-		FooIOUtil.writeListToFile(file, bites);
+		for(int i = 0; i < numLandmarks; ++ i)
+		{
+			landmarks.get(i).write(bites);
+		}
 	}
 	
 	//////////////////////////////////////////////////////////////

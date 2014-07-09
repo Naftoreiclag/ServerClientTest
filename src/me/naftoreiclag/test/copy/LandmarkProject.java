@@ -5,10 +5,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import me.naftoreiclag.fileparsecommons.ParseCommons;
@@ -28,9 +25,7 @@ public class LandmarkProject extends Project
 		originY = 0;
 		pWidth = tWidth << 3;
 		pHeight = tHeight << 3;
-		
 		collisionData = new boolean[tWidth][tHeight];
-		
 		pixelData = ParseCommons.convertImageToAlphaedArray(image, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
@@ -46,27 +41,21 @@ public class LandmarkProject extends Project
 		originY = buffer.get();
 		pWidth = tWidth << 3;
 		pHeight = tHeight << 3;
-		
 		collisionData = ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
-		
 		pixelData = ParseCommons.readAlphaedArray(buffer, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
 	}
 
-	public void save(File file) throws IOException
+	@Override
+	public void write(List<Byte> bites)
 	{
-		List<Byte> bites = new ArrayList<Byte>();
-		
 		bites.add((byte) tWidth);
 		bites.add((byte) tHeight);
 		bites.add((byte) originX);
 		bites.add((byte) originY);
-
 		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
-
-		FooIOUtil.writeListToFile(file, bites);
 	}
 	
 	//////////////////////////////////////////////////////////////

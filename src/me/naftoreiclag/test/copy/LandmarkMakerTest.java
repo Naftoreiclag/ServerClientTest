@@ -7,7 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 @SuppressWarnings("serial")
@@ -70,16 +72,16 @@ public class LandmarkMakerTest extends JFrame
 		JMenu editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
 		
-		JMenuItem fileMenuCFI = new JMenuItem("Add Landmark");
-		fileMenuCFI.addActionListener(new ActionListener()
+		JMenuItem editMenuAddLandmark = new JMenuItem("Add Landmark");
+		editMenuAddLandmark.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				panel.onFileCFIPressed(e);
+				panel.onEditAddLandmarkPressed(e);
 			}
 		});
-		editMenu.add(fileMenuCFI);
+		editMenu.add(editMenuAddLandmark);
 
 		JMenu aboutMenu = new JMenu("About");
 		menuBar.add(aboutMenu);
@@ -89,9 +91,16 @@ public class LandmarkMakerTest extends JFrame
 		//
 		
 		JScrollPane scrollContainer = new JScrollPane(panel);
-		panel.giveScrolPaneAccess(scrollContainer);
+		
+		JPanel foo = new JPanel();
+		panel.setLandmarkPanel(foo);
+		
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, foo, scrollContainer);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(150);
 
-		this.add(scrollContainer);
+		this.add(splitPane);
 	}
 
 	public static void main(String[] args) throws Exception

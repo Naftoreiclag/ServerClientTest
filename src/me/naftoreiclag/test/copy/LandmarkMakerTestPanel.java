@@ -1,25 +1,23 @@
 package me.naftoreiclag.test.copy;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,6 +37,12 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	int zoom = 2;
 	JLabel picLabel;
+
+	private JPanel objectPane;
+	
+	//public Map<JButton, Integer> buttons = new HashMap<JButton, Integer>();
+	
+	int selectedOne = 0;
 	
 	public LandmarkMakerTestPanel() throws Exception
 	{
@@ -173,8 +177,60 @@ public class LandmarkMakerTestPanel extends JPanel
 		this.repaint();
 	}
 
-	public void onFileCFIPressed(ActionEvent e)
+	public void onEditAddLandmarkPressed(ActionEvent e)
 	{
+		if(!(project instanceof AreaProject))
+		{
+			return;
+		}
+		
+		int returnVal = fileChooser.showOpenDialog(this);
+		
+		LandmarkProject lp = null;
+		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = fileChooser.getSelectedFile();
+			
+			if(file.getName().endsWith(".landmark"))
+			{
+				lp = new LandmarkProject(FooIOUtil.readBufferFromFile(file));
+			}
+		}
+		else
+		{
+			System.out.println("closed");
+		}
+		this.repaint();
+		
+		AreaProject ap = (AreaProject) project;
+		
+		JButton newButt = new JButton();
+		newButt.setIcon(new ImageIcon(lp.displayImage));
+		newButt.addActionListener(new DumbButton(ap.numLandmarks));
+		
+		objectPane.add(newButt);
+		
+		ap.addLandmark(lp);
+		
+		objectPane.repaint();
+	}
+	
+	public class DumbButton implements ActionListener
+	{
+		int id;
+		
+		public DumbButton(int i)
+		{
+			this.id = i;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			selectedOne = id;
+			
+		}
 	}
 
 	public void onFileOpen(ActionEvent e)
@@ -222,7 +278,9 @@ public class LandmarkMakerTestPanel extends JPanel
 			File file = fileChooser.getSelectedFile();
 			try
 			{
-				project.save(file);
+				List<Byte> bites = new ArrayList<Byte>();
+				project.write(bites);
+				FooIOUtil.writeListToFile(file, bites);
 			}
 			catch (Exception e1)
 			{
@@ -260,6 +318,12 @@ public class LandmarkMakerTestPanel extends JPanel
 		this.scrollContainer = scrollContainer;
 		
 	}
+
+	public void setLandmarkPanel(JPanel foo)
+	{
+		this.objectPane = foo;
+	}
+
 	
 	
 }

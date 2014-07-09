@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public abstract class Project
 {
@@ -29,7 +30,7 @@ public abstract class Project
 		System.out.println("Loaded project from buffer");
 	}
 
-	public abstract void save(File file) throws IOException;
+	public abstract void write(List<Byte> bites);
 
 	public void draw(Graphics2D g2, int zoom)
 	{
