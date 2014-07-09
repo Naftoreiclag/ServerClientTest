@@ -175,34 +175,6 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileCFIPressed(ActionEvent e)
 	{
-		/*
-		int returnVal = fileChooser.showOpenDialog(this);
-
-		if(returnVal == JFileChooser.APPROVE_OPTION)
-		{
-			File file = fileChooser.getSelectedFile();
-			
-			BufferedImage image = null;
-			
-			try
-			{
-				image = ImageIO.read(file);
-			}
-			catch (IOException e2)
-			{
-				e2.printStackTrace();
-			}
-			
-			lp = new LandmarkProject(image);
-			
-			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
-		}
-		else
-		{
-			System.out.println("closed");
-		}
-		this.repaint();
-		*/
 	}
 
 	public void onFileOpen(ActionEvent e)
@@ -221,11 +193,11 @@ public class LandmarkMakerTestPanel extends JPanel
 			{
 				project = new LandmarkProject(FooIOUtil.readImageFromFile(file));
 			}
-			else if(file.getName().endsWith(".area.png"))
+			else if(file.getName().endsWith(".area"))
 			{
 				project = new AreaProject(FooIOUtil.readBufferFromFile(file));
 			}
-			else if(file.getName().endsWith(".area"))
+			else if(file.getName().endsWith(".area.png"))
 			{
 				project = new AreaProject(FooIOUtil.readImageFromFile(file));
 			}
@@ -276,6 +248,9 @@ public class LandmarkMakerTestPanel extends JPanel
 		{
 			return;
 		}
+
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, project.pWidth * zoom * 5, project.pHeight * zoom * 5);
 		
 		project.draw(g2, zoom);
 	}

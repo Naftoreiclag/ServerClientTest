@@ -93,8 +93,6 @@ public class LandmarkProject extends Project
 	public void drawStuff(Graphics2D g2, int zoom)
 	{
 
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, pWidth * zoom * 5, pHeight * zoom * 5);
 		g2.setColor(Color.YELLOW);
 		g2.fillRect(0, 0, pWidth * zoom, pHeight * zoom);
 	}
