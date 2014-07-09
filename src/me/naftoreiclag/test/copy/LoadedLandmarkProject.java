@@ -69,7 +69,7 @@ public class LoadedLandmarkProject
 		System.out.println(originX + " , " + originY);
 		System.out.println("============");
 		
-		collisionData = new boolean[tWidth][tHeight];//ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
+		collisionData = ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
 		pixelData = ParseCommons.readAlphaedArray(buffer, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
@@ -86,7 +86,7 @@ public class LoadedLandmarkProject
 		bites.add((byte) originX);
 		bites.add((byte) originY);
 
-		//ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
+		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 		
 		// Writing

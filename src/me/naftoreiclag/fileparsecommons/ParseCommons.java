@@ -8,39 +8,44 @@ public class ParseCommons
 {
 	public static final int[] pallete = {0x000000, 0x333333, 0x555555, 0x777777, 0x999999, 0xBBBBBB, 0xDDDDDD, 0xFFFFFF};
 
-	public static boolean[][] readCollisionArray(ByteBuffer data2, int tWidth, int tHeight)
+	public static boolean[][] readCollisionArray(ByteBuffer buffer, int tWidth, int tHeight)
 	{
-		boolean[][] ret = new boolean[tWidth][tHeight];
+		boolean[][] returnVal = new boolean[tWidth][tHeight];
+
+		int byteCount = 0;
 		
-		int colX = 0;
-		int colY = 0;
+		int ehx = 0;
+		int why = 0;
 		while(true)
 		{
-			byte eightTiles = data2.get();
+			byte eightTiles = buffer.get();
+			++ byteCount;
 			
 			for(int i = 0; i < 8; ++ i)
 			{
-				ret[colX ++][colY] = (eightTiles & (1 << i)) > 0;
+				returnVal[ehx ++][why] = (eightTiles & (1 << i)) > 0;
 				
-				if(colX >= tWidth)
+				if(ehx >= tWidth)
 				{
-					colX = 0;
-					++ colY;
+					ehx = 0;
+					++ why;
 					
-					if(colY >= tHeight)
+					if(why >= tHeight)
 					{
 						break;
 					}
 				}
 			}
 			
-			if(colY >= tHeight)
+			if(why >= tHeight)
 			{
 				break;
 			}
 		}
 		
-		return ret;
+		System.out.println("read" + byteCount + " ybtes");
+		
+		return returnVal;
 	}
 
 	public static byte[][] readAlphaedArray(ByteBuffer data, int pWidth, int pHeight)
@@ -51,7 +56,6 @@ public class ParseCommons
 		int why = 0;
 		while(true)
 		{
-			System.out.println(ehx + ", " + why);
 			byte colorStrip = data.get();
 			
 			byte color;
@@ -136,6 +140,9 @@ public class ParseCommons
 	{
 		byte buildAByte = 0;
 		int position = 0;
+		
+		int byteCount = 0;
+		
 		for(int ty = 0; ty < tHeight; ++ ty)
 		{
 			for(int tx = 0; tx < tWidth; ++ tx)
@@ -147,14 +154,17 @@ public class ParseCommons
 				
 				++ position;
 				
-				if(position == 8)
+				if(position == 8 || (tx == tWidth - 1 && ty == tHeight - 1))
 				{
 					bites.add(buildAByte);
+					byteCount ++;
 					buildAByte = 0;
 					position = 0;
 				}
 			}
 		}
+		
+		System.out.println("wrote " + byteCount + "bytes ");
 	}
 
 	// Appends an alphaed byte[][] to a Byte List
