@@ -7,7 +7,16 @@ import java.nio.ByteBuffer;
 
 public abstract class Project
 {
+	int tWidth;
+	int tHeight;
+	
+	int pWidth;
+	int pHeight;
+
 	BufferedImage displayImage;
+	
+	byte[][] pixelData;
+	boolean[][] collisionData;
 	
 	public Project(BufferedImage image)
 	{

@@ -13,19 +13,8 @@ import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class LandmarkProject extends Project
 {
-	byte[][] pixelData;
-	boolean[][] collisionData;
-	
 	int originX;
 	int originY;
-
-	BufferedImage displayImage;
-	
-	int tWidth;
-	int tHeight;
-	
-	int pWidth;
-	int pHeight;
 	
 	public LandmarkProject(BufferedImage image)
 	{

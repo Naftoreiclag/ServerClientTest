@@ -175,6 +175,7 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void onFileCFIPressed(ActionEvent e)
 	{
+		/*
 		int returnVal = fileChooser.showOpenDialog(this);
 
 		if(returnVal == JFileChooser.APPROVE_OPTION)
@@ -192,7 +193,7 @@ public class LandmarkMakerTestPanel extends JPanel
 				e2.printStackTrace();
 			}
 			
-			lp = new Project(image);
+			lp = new LandmarkProject(image);
 			
 			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}
@@ -201,6 +202,7 @@ public class LandmarkMakerTestPanel extends JPanel
 			System.out.println("closed");
 		}
 		this.repaint();
+		*/
 	}
 
 	public void onFileOpen(ActionEvent e)
@@ -211,19 +213,22 @@ public class LandmarkMakerTestPanel extends JPanel
 		{
 			File file = fileChooser.getSelectedFile();
 			
-			byte[] data = null;
-			try
+			if(file.getName().endsWith(".l"))
 			{
-				data = Files.readAllBytes(file.toPath());
+				lp = new LandmarkProject(loadBufferFromFile(file));
 			}
-			catch (IOException e2) { e2.printStackTrace(); }
-			
-			System.out.println(data.length);
-			
-			ByteBuffer buffer = ByteBuffer.wrap(data);
-			
-			
-			lp = new LandmarkProject(buffer);
+			else if(file.getName().endsWith(".l.png"))
+			{
+				lp = new LandmarkProject(loadImageFromFile(file));
+			}
+			else if(file.getName().endsWith(".c.png"))
+			{
+				lp = new LandmarkProject(loadBufferFromFile(file));
+			}
+			else if(file.getName().endsWith(".c"))
+			{
+				lp = new LandmarkProject(loadImageFromFile(file));
+			}
 					
 			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
 		}
@@ -362,5 +367,32 @@ public class LandmarkMakerTestPanel extends JPanel
 	{
 		this.scrollContainer = scrollContainer;
 		
+	}
+	
+	public static ByteBuffer loadBufferFromFile(File file)
+	{
+		byte[] data = null;
+		try
+		{
+			data = Files.readAllBytes(file.toPath());
+		}
+		catch (IOException e2) { e2.printStackTrace(); }
+		return ByteBuffer.wrap(data);
+	}
+	
+	public static BufferedImage loadImageFromFile(File file)
+	{
+		BufferedImage image = null;
+		
+		try
+		{
+			image = ImageIO.read(file);
+		}
+		catch (IOException e2)
+		{
+			e2.printStackTrace();
+		}
+		
+		return image;
 	}
 }
