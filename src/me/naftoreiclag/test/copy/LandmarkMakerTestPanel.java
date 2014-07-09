@@ -139,8 +139,8 @@ public class LandmarkMakerTestPanel extends JPanel
 				return;
 			}
 			
-			lp.originX = x;
-			lp.originY = y;
+			//lp.originX = x;
+			//lp.originY = y;
 			this.repaint();
 
 		}
@@ -215,19 +215,19 @@ public class LandmarkMakerTestPanel extends JPanel
 			
 			if(file.getName().endsWith(".l"))
 			{
-				lp = new LandmarkProject(loadBufferFromFile(file));
+				lp = new LandmarkProject(FooIOUtil.loadBufferFromFile(file));
 			}
 			else if(file.getName().endsWith(".l.png"))
 			{
-				lp = new LandmarkProject(loadImageFromFile(file));
+				lp = new LandmarkProject(FooIOUtil.loadImageFromFile(file));
 			}
 			else if(file.getName().endsWith(".c.png"))
 			{
-				lp = new LandmarkProject(loadBufferFromFile(file));
+				lp = new AreaProject(FooIOUtil.loadBufferFromFile(file));
 			}
 			else if(file.getName().endsWith(".c"))
 			{
-				lp = new LandmarkProject(loadImageFromFile(file));
+				lp = new AreaProject(FooIOUtil.loadImageFromFile(file));
 			}
 					
 			this.setSize(lp.pWidth * zoom, lp.pHeight * zoom);
@@ -306,7 +306,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	public void drawThings(Graphics2D g2)
 	{
 		g2.setColor(Color.RED);
-		g2.drawRect(lp.originX * 8 * zoom, lp.originY * 8 * zoom, 8 * zoom, 8 * zoom);
+		//g2.drawRect(lp.originX * 8 * zoom, lp.originY * 8 * zoom, 8 * zoom, 8 * zoom);
 	}
 	
 	public void drawBoxes(Graphics2D g2)
@@ -369,30 +369,5 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 	}
 	
-	public static ByteBuffer loadBufferFromFile(File file)
-	{
-		byte[] data = null;
-		try
-		{
-			data = Files.readAllBytes(file.toPath());
-		}
-		catch (IOException e2) { e2.printStackTrace(); }
-		return ByteBuffer.wrap(data);
-	}
 	
-	public static BufferedImage loadImageFromFile(File file)
-	{
-		BufferedImage image = null;
-		
-		try
-		{
-			image = ImageIO.read(file);
-		}
-		catch (IOException e2)
-		{
-			e2.printStackTrace();
-		}
-		
-		return image;
-	}
 }
