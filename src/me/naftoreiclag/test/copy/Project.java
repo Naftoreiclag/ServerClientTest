@@ -19,6 +19,10 @@ public abstract class Project
 	boolean leftDown = false;
 	boolean middleDown = false;
 	boolean rightDown = false;
+	
+	int selectedOne;
+	
+	int zoom = 4;
 
 	BufferedImage displayImage;
 	
@@ -41,11 +45,11 @@ public abstract class Project
 	{
 	}
 	
-	private void mMove(MouseEvent e)
+	void mMove(MouseEvent e)
 	{
 	}
 	
-	private void mPress(MouseEvent e)
+	void mPress(MouseEvent e)
 	{
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
@@ -61,7 +65,7 @@ public abstract class Project
 		}
 	}
 	
-	private void mRelease(MouseEvent e)
+	void mRelease(MouseEvent e)
 	{
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{

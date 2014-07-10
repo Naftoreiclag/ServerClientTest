@@ -29,17 +29,10 @@ public class LandmarkMakerTestPanel extends JPanel
 	JScrollPane scrollContainer = null;
 	
 	Project project = null;
-	
-	boolean leftDown = false;
-	boolean middleDown = false;
-	boolean rightDown = false;
 
 	int zoom = 4;
-	JLabel picLabel;
 
 	private JPanel selectionPane;
-	
-	int selectedOne = 0;
 	
 	public LandmarkMakerTestPanel() throws Exception
 	{
@@ -73,109 +66,40 @@ public class LandmarkMakerTestPanel extends JPanel
 		});
 	}
 
+
 	private void mMove(MouseEvent e)
 	{
 		if(project == null)
 		{
 			return;
 		}
-		
-		int x = e.getX();
-		int y = e.getY();
-		
-		x /= zoom;
-		y /= zoom;
-		
-		x = x >> 3;
-		y = y >> 3;
 
-		if (x >= project.tWidth || y >= project.tHeight || x < 0 || y < 0)
-		{
-			return;
-		}
-		
-		if(leftDown)
-		{
-			project.collisionData[x][y] = true;
-		}
-		else if(rightDown)
-		{
-			project.collisionData[x][y] = false;
-		}
+		project.mMove(e);
 		
 		this.repaint();
 	}
 	
 	private void mPress(MouseEvent e)
 	{
-		int x = e.getX();
-		int y = e.getY();
-
-		x /= zoom;
-		y /= zoom;
-
-		x = x >> 3;
-		y = y >> 3;
-		
-		if (x >= project.tWidth || y >= project.tHeight || x < 0 || y < 0)
+		if(project == null)
 		{
 			return;
 		}
 		
-		if(e.getButton() == MouseEvent.BUTTON1)
-		{
-			leftDown = true;
-		}
-		if(e.getButton() == MouseEvent.BUTTON2)
-		{
-			if(project == null) { return; }
-			
-			if(project instanceof LandmarkProject)
-			{
-				LandmarkProject lp = (LandmarkProject) project;
-
-				lp.originX = x;
-				lp.originY = y;
-				
-			}
-			
-			if(project instanceof AreaProject)
-			{
-				AreaProject ap = (AreaProject) project;
-
-				ap.placeLandmark(selectedOne, x, y);
-				
-			}
-			
-			this.repaint();
-
-		}
-		if(e.getButton() == MouseEvent.BUTTON3)
-		{
-			rightDown = true;
-			
-			if(project instanceof AreaProject)
-			{
-				AreaProject ap = (AreaProject) project;
-
-				ap.placeLandmark(-1, x, y);
-			}
-		}
+		project.mPress(e);
+		
+		this.repaint();
 	}
 	private void mRelease(MouseEvent e)
 	{
-		if(e.getButton() == MouseEvent.BUTTON1)
+		if(project == null)
 		{
-			leftDown = false;
+			return;
 		}
-		if(e.getButton() == MouseEvent.BUTTON2)
-		{
-			middleDown = false;
-		}
-		if(e.getButton() == MouseEvent.BUTTON3)
-		{
-			rightDown = false;
-		}
+		
+		project.mRelease(e);
+		
+		this.repaint();
 	}
 
 	public void onFileNew(ActionEvent e)
@@ -236,9 +160,7 @@ public class LandmarkMakerTestPanel extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			selectedOne = id;
-			
-			System.out.println(selectedOne);
+			project.selectedOne = id;
 			
 		}
 	}

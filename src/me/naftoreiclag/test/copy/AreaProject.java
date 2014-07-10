@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -202,6 +203,76 @@ public class AreaProject extends Project
 	
 	//////////////////////////////////////////////////////////////
 
+	@Override
+	void mMove(MouseEvent e)
+	{
+		super.mMove(e);
+		
+		int x = e.getX();
+		int y = e.getY();
+		
+		x /= zoom;
+		y /= zoom;
+		
+		x = x >> 3;
+		y = y >> 3;
+
+		if (x >= tWidth || y >= tHeight || x < 0 || y < 0)
+		{
+			return;
+		}
+		
+		if(leftDown)
+		{
+			collisionData[x][y] = true;
+		}
+		else if(rightDown)
+		{
+			collisionData[x][y] = false;
+		}
+	}
+	
+	@Override
+	void mPress(MouseEvent e)
+	{
+		super.mPress(e);
+		
+		int x = e.getX();
+		int y = e.getY();
+
+		x /= zoom;
+		y /= zoom;
+
+		x = x >> 3;
+		y = y >> 3;
+		
+		if (x >= tWidth || y >= tHeight || x < 0 || y < 0)
+		{
+			return;
+		}
+		
+		if(e.getButton() == MouseEvent.BUTTON1)
+		{
+			leftDown = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2)
+		{
+			placeLandmark(selectedOne, x, y);
+		}
+		if(e.getButton() == MouseEvent.BUTTON3)
+		{
+			placeLandmark(-1, x, y);
+		}
+	}
+
+	@Override
+	void mRelease(MouseEvent e)
+	{
+		super.mRelease(e);
+	}
+	
+	///
+	
 	@Override
 	public void draw(Graphics2D g2, int zoom)
 	{
