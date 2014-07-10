@@ -31,14 +31,13 @@ public class LandmarkMakerTestPanel extends JPanel
 	Project project = null;
 	
 	boolean leftDown = false;
+	boolean middleDown = false;
 	boolean rightDown = false;
 
 	int zoom = 4;
 	JLabel picLabel;
 
-	private JPanel objectPane;
-	
-	//public Map<JButton, Integer> buttons = new HashMap<JButton, Integer>();
+	private JPanel selectionPane;
 	
 	int selectedOne = 0;
 	
@@ -57,16 +56,6 @@ public class LandmarkMakerTestPanel extends JPanel
 			public void mouseDragged(MouseEvent e){ mMove(e); }
 			@Override
 			public void mouseMoved(MouseEvent e){ mMove(e); }
-		});
-		
-		this.addKeyListener(new KeyListener()
-		{
-			@Override
-			public void keyPressed(KeyEvent e) { kPress(e); }
-			@Override
-			public void keyReleased(KeyEvent e) { kRelease(e); }
-			@Override
-			public void keyTyped(KeyEvent e) { }
 		});
 		
 		this.addMouseListener(new MouseListener()
@@ -179,21 +168,20 @@ public class LandmarkMakerTestPanel extends JPanel
 		{
 			leftDown = false;
 		}
+		if(e.getButton() == MouseEvent.BUTTON2)
+		{
+			middleDown = false;
+		}
 		if(e.getButton() == MouseEvent.BUTTON3)
 		{
 			rightDown = false;
 		}
 	}
-	private void kPress(KeyEvent e)
-	{
-	}
-	private void kRelease(KeyEvent e)
-	{
-	}
 
 	public void onFileNew(ActionEvent e)
 	{
 		project = null;
+		selectionPane.removeAll();
 		this.repaint();
 	}
 
@@ -229,11 +217,11 @@ public class LandmarkMakerTestPanel extends JPanel
 		newButt.setIcon(new ImageIcon(lp.displayImage));
 		newButt.addActionListener(new DumbButton(ap.numLandmarks));
 		
-		objectPane.add(newButt);
+		selectionPane.add(newButt);
 		
 		ap.addLandmark(lp);
 		
-		objectPane.repaint();
+		selectionPane.repaint();
 	}
 	
 	public class DumbButton implements ActionListener
@@ -343,7 +331,7 @@ public class LandmarkMakerTestPanel extends JPanel
 
 	public void setLandmarkPanel(JPanel foo)
 	{
-		this.objectPane = foo;
+		this.selectionPane = foo;
 	}
 
 	

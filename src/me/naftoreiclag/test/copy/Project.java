@@ -1,6 +1,7 @@
 package me.naftoreiclag.test.copy;
 
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,10 @@ public abstract class Project
 	
 	int pWidth;
 	int pHeight;
+	
+	boolean leftDown = false;
+	boolean middleDown = false;
+	boolean rightDown = false;
 
 	BufferedImage displayImage;
 	
@@ -34,5 +39,41 @@ public abstract class Project
 
 	public void draw(Graphics2D g2, int zoom)
 	{
+	}
+	
+	private void mMove(MouseEvent e)
+	{
+	}
+	
+	private void mPress(MouseEvent e)
+	{
+		if(e.getButton() == MouseEvent.BUTTON1)
+		{
+			leftDown = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2)
+		{
+			middleDown = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON3)
+		{
+			rightDown = true;
+		}
+	}
+	
+	private void mRelease(MouseEvent e)
+	{
+		if(e.getButton() == MouseEvent.BUTTON1)
+		{
+			leftDown = false;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2)
+		{
+			middleDown = false;
+		}
+		if(e.getButton() == MouseEvent.BUTTON3)
+		{
+			rightDown = false;
+		}
 	}
 }
