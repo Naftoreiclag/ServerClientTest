@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.naftoreiclag.cliyent.Landmark;
 import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class AreaProject extends Project
@@ -22,9 +23,13 @@ public class AreaProject extends Project
 	Map<Integer, LandmarkProject> landmarks = new HashMap<Integer, LandmarkProject>();
 	
 	int numLandmarks;
+	int numLandmarkInstances;
 	
 	int cWidth;
 	int cHeight;
+
+	int[][] landmarkData;
+	boolean[][] compositeCollisionData;
 	
 	public AreaProject(BufferedImage image)
 	{
@@ -37,10 +42,22 @@ public class AreaProject extends Project
 		pWidth = cWidth << 7;
 		pHeight = cHeight << 7;
 		numLandmarks = 0;
+		numLandmarkInstances = 0;
 		collisionData = new boolean[tWidth][tHeight];
 		pixelData = ParseCommons.convertImageToUnalphaedArray(image, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
+
+		compositeCollisionData = new boolean[tWidth][tHeight];
+		
+		landmarkData = new int[tWidth][tHeight];
+		for(int x = 0; x < tWidth; ++ x)
+		{
+			for(int y = 0; y < tHeight; ++ y)
+			{
+				landmarkData[x][y] = -1;
+			}
+		}
 	}
 	
 	public AreaProject(ByteBuffer buffer)
@@ -54,20 +71,86 @@ public class AreaProject extends Project
 		pWidth = cWidth << 7;
 		pHeight = cHeight << 7;
 		numLandmarks = buffer.get();
+		numLandmarkInstances = buffer.get();
 		collisionData = ParseCommons.readCollisionArray(buffer, tWidth, tHeight);
 		pixelData = ParseCommons.readUnalphaedArray(buffer, pWidth, pHeight);
 		
 		displayImage = ParseCommons.convertEitherArrayToImage(pixelData, pWidth, pHeight);
+
+		compositeCollisionData = new boolean[tWidth][tHeight];
 		
 		for(int i = 0; i < numLandmarks; ++ i)
 		{
 			landmarks.put(i, new LandmarkProject(buffer));
 		}
+		
+		landmarkData = new int[tWidth][tHeight];
+		for(int x = 0; x < tWidth; ++ x)
+		{
+			for(int y = 0; y < tHeight; ++ y)
+			{
+				landmarkData[x][y] = -1;
+			}
+		}
+
+		for(int i = 0; i < numLandmarkInstances; ++ i)
+		{
+			landmarkData[buffer.get()][buffer.get()] = buffer.get();
+		}
 	}
 	
-	public void addLandmark(LandmarkProject lp)
+	public int addLandmark(LandmarkProject lp)
 	{
-		landmarks.put(numLandmarks ++, lp);
+		landmarks.put(numLandmarks, lp);
+		return numLandmarks ++;
+	}
+	
+	public void placeLandmark(int id, int x, int y)
+	{
+		landmarkData[x][y] = id;
+		
+		updateCompositeCollision();
+	}
+
+	private void updateCompositeCollision()
+	{
+		for(int y2 = 0; y2 < tHeight; ++ y2)
+		{
+			for(int x2 = 0; x2 < tWidth; ++ x2)
+			{
+				int id = landmarkData[x2][y2];
+				
+				if(id != -1)
+				{
+					LandmarkProject l = landmarks.get(id);
+					
+					for(int x = 0; x < l.tWidth; ++ x)
+					{
+						for(int y = 0; y < l.tHeight; ++ y)
+						{
+							if(l.collisionData[x][y])
+							{
+								int x1 = x2 + x - l.originX;
+								
+								if(x1 < 0 || x1 > tWidth)
+								{
+									continue;
+								}
+								
+								int y1 = y2 + y - l.originY;
+								
+								if(y1 < 0 || y1 > tHeight)
+								{
+									continue;
+								}
+								
+								compositeCollisionData[x1][y1] = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -76,12 +159,42 @@ public class AreaProject extends Project
 		bites.add((byte) cWidth);
 		bites.add((byte) cHeight);
 		bites.add((byte) numLandmarks);
+		
+		for(int y = 0; y < tHeight; ++ y)
+		{
+			for(int x = 0; x < tWidth; ++ x)
+			{
+				int id = landmarkData[x][y];
+				
+				if(id != -1)
+				{
+					++ numLandmarkInstances;
+				}
+			}
+		}
+		
+		bites.add((byte) numLandmarkInstances);
 		ParseCommons.writeCollisionArray(collisionData, tWidth, tHeight, bites);
 		ParseCommons.writeAlphaedByteArray(pixelData, pWidth, pHeight, bites);
 		
 		for(int i = 0; i < numLandmarks; ++ i)
 		{
 			landmarks.get(i).write(bites);
+		}
+		
+		for(int y = 0; y < tHeight; ++ y)
+		{
+			for(int x = 0; x < tWidth; ++ x)
+			{
+				int id = landmarkData[x][y];
+				
+				if(id != -1)
+				{
+					bites.add((byte) x);
+					bites.add((byte) y);
+					bites.add((byte) id);
+				}
+			}
 		}
 	}
 	
@@ -91,6 +204,21 @@ public class AreaProject extends Project
 	public void draw(Graphics2D g2, int zoom)
 	{
 		g2.drawImage(displayImage, 0, 0, pWidth * zoom, pHeight * zoom, null);
+		
+		for(int y = 0; y < tHeight; ++ y)
+		{
+			for(int x = 0; x < tWidth; ++ x)
+			{
+				int id = landmarkData[x][y];
+				
+				if(id != -1)
+				{
+					LandmarkProject lp = landmarks.get(id);
+					
+					g2.drawImage(lp.displayImage, (x - lp.originX) * 8 *zoom, (y - lp.originY) * 8 * zoom, lp.pWidth * zoom, lp.pHeight * zoom, null);
+				}
+			}
+		}
 		
 		drawLines(g2, cWidth, cHeight, zoom);
 		drawBoxes(g2, cWidth, cHeight, zoom);
@@ -115,6 +243,18 @@ public class AreaProject extends Project
 			for(int y = 0; y < tHeight; ++ y)
 			{
 				if(collisionData[x][y])
+				{
+					g2.fillRect(x * 8 * scale, y * 8 * scale, 8 * scale, 8 * scale);
+				}
+			}
+		}
+		g2.setColor(Color.YELLOW);
+		
+		for(int x = 0; x < tWidth; ++ x)
+		{
+			for(int y = 0; y < tHeight; ++ y)
+			{
+				if(compositeCollisionData[x][y])
 				{
 					g2.fillRect(x * 8 * scale, y * 8 * scale, 8 * scale, 8 * scale);
 				}

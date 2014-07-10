@@ -35,7 +35,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	boolean leftDown = false;
 	boolean rightDown = false;
 
-	int zoom = 2;
+	int zoom = 4;
 	JLabel picLabel;
 
 	private JPanel objectPane;
@@ -101,8 +101,8 @@ public class LandmarkMakerTestPanel extends JPanel
 		
 		x = x >> 3;
 		y = y >> 3;
-		
-		if(x >= project.tWidth || y >= project.tHeight)
+
+		if (x >= project.tWidth || y >= project.tHeight || x < 0 || y < 0)
 		{
 			return;
 		}
@@ -121,36 +121,58 @@ public class LandmarkMakerTestPanel extends JPanel
 	
 	private void mPress(MouseEvent e)
 	{
+		int x = e.getX();
+		int y = e.getY();
+
+		x /= zoom;
+		y /= zoom;
+
+		x = x >> 3;
+		y = y >> 3;
+		
+		if (x >= project.tWidth || y >= project.tHeight || x < 0 || y < 0)
+		{
+			return;
+		}
+		
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
 			leftDown = true;
 		}
 		if(e.getButton() == MouseEvent.BUTTON2)
 		{
-			if (project == null) { return; }
-			int x = e.getX();
-			int y = e.getY();
-
-			x /= zoom;
-			y /= zoom;
-
-			x = x >> 3;
-			y = y >> 3;
-
-			if (x >= project.tWidth || y >= project.tHeight)
+			if(project == null) { return; }
+			
+			if(project instanceof LandmarkProject)
 			{
-				System.out.println("ogaeroigjger" + x + ", " + y);
-				return;
+				LandmarkProject lp = (LandmarkProject) project;
+
+				lp.originX = x;
+				lp.originY = y;
+				
 			}
 			
-			//lp.originX = x;
-			//lp.originY = y;
+			if(project instanceof AreaProject)
+			{
+				AreaProject ap = (AreaProject) project;
+
+				ap.placeLandmark(selectedOne, x, y);
+				
+			}
+			
 			this.repaint();
 
 		}
 		if(e.getButton() == MouseEvent.BUTTON3)
 		{
 			rightDown = true;
+			
+			if(project instanceof AreaProject)
+			{
+				AreaProject ap = (AreaProject) project;
+
+				ap.landmarkData[x][y] = -1;
+			}
 		}
 	}
 	private void mRelease(MouseEvent e)
@@ -229,6 +251,8 @@ public class LandmarkMakerTestPanel extends JPanel
 		public void actionPerformed(ActionEvent e)
 		{
 			selectedOne = id;
+			
+			System.out.println(selectedOne);
 			
 		}
 	}

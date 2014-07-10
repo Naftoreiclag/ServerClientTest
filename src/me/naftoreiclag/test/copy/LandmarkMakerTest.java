@@ -90,13 +90,11 @@ public class LandmarkMakerTest extends JFrame
 
 		//
 		
-		JScrollPane scrollContainer = new JScrollPane(panel);
-		
 		JPanel foo = new JPanel();
 		panel.setLandmarkPanel(foo);
 		
 		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, foo, scrollContainer);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(panel), new JScrollPane(foo));
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
 
