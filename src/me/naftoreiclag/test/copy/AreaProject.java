@@ -28,7 +28,7 @@ public class AreaProject extends Project
 	int cWidth;
 	int cHeight;
 
-	int[][] landmarkData;
+	private int[][] landmarkData;
 	boolean[][] compositeCollisionData;
 	
 	public AreaProject(BufferedImage image)
@@ -97,6 +97,8 @@ public class AreaProject extends Project
 		{
 			landmarkData[buffer.get()][buffer.get()] = buffer.get();
 		}
+		
+		updateCompositeCollision();
 	}
 	
 	public int addLandmark(LandmarkProject lp)

@@ -12,9 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -171,7 +169,7 @@ public class LandmarkMakerTestPanel extends JPanel
 			{
 				AreaProject ap = (AreaProject) project;
 
-				ap.landmarkData[x][y] = -1;
+				ap.placeLandmark(-1, x, y);
 			}
 		}
 	}
