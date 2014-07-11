@@ -21,11 +21,11 @@ public class Chunk
 	public Chunk(ByteBuffer data)
 	{
 		id = data.getLong();
+		areaId = data.getLong();
 		wId = data.getLong();
 		nId = data.getLong();
 		eId = data.getLong();
 		sId = data.getLong();
-		areaId = data.getLong();
 		
 		System.out.println("Chunk is id: " + id + " surrounded by: " + wId + ", " + nId + ", " + eId + ", " + sId);
 		
@@ -58,5 +58,17 @@ public class Chunk
 		}
 		
 		image = ParseCommons.readUnalphaedImage(data, 128, 128);
+	}
+
+	public Chunk()
+	{
+		id = 0;
+		areaId = 0;
+		wId = 0;
+		nId = 0;
+		eId = 0;
+		sId = 0;
+		
+		image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 	}
 }

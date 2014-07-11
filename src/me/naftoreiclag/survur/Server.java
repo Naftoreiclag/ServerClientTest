@@ -57,7 +57,8 @@ public class Server
 			DataInputStream fromClient = new DataInputStream(socket.getInputStream());
 			System.out.println("Connection Established!");
 			
-			toClient.writeLong(spawnChunks[(new Random()).nextInt(spawnChunks.length)]);
+			//toClient.writeLong(spawnChunks[(new Random()).nextInt(spawnChunks.length)]);
+			toClient.writeLong(881615112279760765L);
 			System.out.println("Sent a random spawn chunk's ID");
 			
 			boolean conversationSustained = true;
@@ -92,7 +93,7 @@ public class Server
 					byte[] chunkBytes = null;
 					try
 					{
-						chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks/" + requestedChunk + ".c"));
+						chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks2/" + requestedChunk + ".c"));
 					}
 					catch(NoSuchFileException e)
 					{

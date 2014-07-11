@@ -72,9 +72,11 @@ public class LocalMap
 			if(chunk == null)
 			{
 				System.err.println("Could not get chunk" + id + " from server!");
+				
+				chunk = new Chunk();
 			}
 			
-			chunks.put(id, chunk);
+			chunks.put(chunk.id, chunk);
 		}
 		
 		return chunk;
