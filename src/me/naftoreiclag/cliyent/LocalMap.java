@@ -24,7 +24,7 @@ public class LocalMap
 	public void paint(Graphics2D g2, Player player)
 	{
 		int viewRad = 2;
-		int scale = 256;
+		int scale = 128;
 		
 		int offset = 0;
 		

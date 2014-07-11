@@ -2,12 +2,15 @@ package me.naftoreiclag.survur;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Server
@@ -18,6 +21,7 @@ public class Server
 	
 	public static void loadSpawnChunks() throws IOException
 	{
+		/*
 		byte[] chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/spawnchunks.s"));
 		
 		spawnChunks = new long[chunkBytes.length >> 3];
@@ -38,6 +42,44 @@ public class Server
 			System.out.print(" ");
 		}
 		System.out.println();
+		
+		*/
+		
+		List<Long> fooList = new ArrayList<Long>();
+		
+		File[] fooFiles = new File("server/map/chunks2/").listFiles();
+		for(File file : fooFiles)
+		{
+			try
+			{
+				
+			}
+			catch(Exception e)
+			{
+				continue;
+			}
+			
+			fooList.add(Long.parseLong(file.getName().substring(0, file.getName().length() - 2)));
+		}
+		
+
+		spawnChunks = new long[fooList.size()];
+		for(int  i= 0; i <            fooList.size(); ++ i)
+		{
+			spawnChunks[i] = fooList.get(i);
+			
+			
+		}
+
+		System.out.println("Spawn chunk sie: " + spawnChunks.length);
+		System.out.print("Spawn chunk list: ");
+		for(long id : spawnChunks)
+		{
+			System.out.print(id);
+			System.out.print(" ");
+		}
+		System.out.println();
+		
 	}
 	
 	public static void main(String args[]) throws Exception
@@ -57,8 +99,8 @@ public class Server
 			DataInputStream fromClient = new DataInputStream(socket.getInputStream());
 			System.out.println("Connection Established!");
 			
-			//toClient.writeLong(spawnChunks[(new Random()).nextInt(spawnChunks.length)]);
-			toClient.writeLong(881615112279760765L);
+			toClient.writeLong(spawnChunks[(new Random()).nextInt(spawnChunks.length)]);
+			//toClient.writeLong(881615112279760765L);
 			System.out.println("Sent a random spawn chunk's ID");
 			
 			boolean conversationSustained = true;

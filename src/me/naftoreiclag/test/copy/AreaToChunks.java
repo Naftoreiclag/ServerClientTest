@@ -12,6 +12,8 @@ import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class AreaToChunks
 {
+	public static long totally = 1337;
+	
 	public static void main(String[] args) throws IOException
 	{
 		convert("server/map/chunks2/", new File("tests/helloworld.area"));
@@ -97,7 +99,7 @@ public class AreaToChunks
 		public void write(List<Byte> bites)
 		{
 			addLong(bites, id);
-			addLong(bites, areaId);
+			addLong(bites, 9001L);
 			addLong(bites, wId);
 			addLong(bites, nId);
 			addLong(bites, eId);
@@ -110,14 +112,18 @@ public class AreaToChunks
 	
 	public static void addLong(List<Byte> bites, long l)
 	{
-		bites.add((byte) (l >> 52));
-		bites.add((byte) (l >> 48));
-		bites.add((byte) (l >> 40));
-		bites.add((byte) (l >> 32));
-		bites.add((byte) (l >> 24));
-		bites.add((byte) (l >> 16));
-		bites.add((byte) (l >> 8));
-		bites.add((byte) l);
+		ByteBuffer b = ByteBuffer.allocate(Long.SIZE >> 3);
+		
+		b.putLong(l);
+		
+		b.flip();
+		
+		byte[] lol = b.array();
+		
+		for(byte bb : lol)
+		{
+			bites.add(bb);
+		}
 	}
 	
 	public static class ChunkEntry
@@ -157,6 +163,9 @@ public class AreaToChunks
 			random = new Random();
 		}
 		
-		return random.nextLong();
+		
+		//return random.nextLong();
+		
+		return totally ++;
 	}
 }
