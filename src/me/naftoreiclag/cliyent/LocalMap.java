@@ -52,6 +52,9 @@ public class LocalMap
 			// Move pointer A south, unless this is the last in the rows, in which case don't do anything because that's pointless.
 			if(y != viewRad * 2) { pinpointA = getChunk(pinpointA.sId); }
 		}
+		
+		Chunk meChunk = getChunk(player.locationChunkID);
+		g2.drawImage(meChunk.image, 0 * scale, 0 * scale, scale, scale, null);
 	}
 	
 	public Chunk getChunk(long id)
