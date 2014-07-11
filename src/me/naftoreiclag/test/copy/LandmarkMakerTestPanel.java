@@ -26,8 +26,6 @@ public class LandmarkMakerTestPanel extends JPanel
 {
 	JFileChooser fileChooser = new JFileChooser();
 	
-	JScrollPane scrollContainer = null;
-	
 	Project project = null;
 
 	int zoom = 4;
@@ -105,7 +103,7 @@ public class LandmarkMakerTestPanel extends JPanel
 	public void onFileNew(ActionEvent e)
 	{
 		project = null;
-		selectionPane.removeAll();
+		syncSelectionPane();
 		this.repaint();
 	}
 
@@ -136,16 +134,31 @@ public class LandmarkMakerTestPanel extends JPanel
 		this.repaint();
 		
 		AreaProject ap = (AreaProject) project;
-		
-		JButton newButt = new JButton();
-		newButt.setIcon(new ImageIcon(lp.displayImage));
-		newButt.addActionListener(new DumbButton(ap.numLandmarks));
-		
-		selectionPane.add(newButt);
-		
 		ap.addLandmark(lp);
 		
-		selectionPane.repaint();
+		syncSelectionPane();
+	}
+	
+	public void syncSelectionPane()
+	{
+		selectionPane.removeAll();
+		
+		if(project instanceof AreaProject)
+		{
+			AreaProject ap = (AreaProject) project;
+			
+			for(int i = 0; i < ap.numLandmarks; ++ i)
+			{
+				JButton newButt = new JButton();
+				newButt.setIcon(new ImageIcon(ap.landmarks.get(i).displayImage));
+				newButt.addActionListener(new DumbButton(i));
+				
+				selectionPane.add(newButt);
+			}
+		}
+		
+		selectionPane.updateUI();
+		return;
 	}
 	
 	public class DumbButton implements ActionListener
@@ -161,7 +174,21 @@ public class LandmarkMakerTestPanel extends JPanel
 		public void actionPerformed(ActionEvent e)
 		{
 			project.selectedOne = id;
-			
+		}
+	}
+	public class FooButton implements ActionListener
+	{
+		int id;
+		
+		public FooButton(int i)
+		{
+			this.id = i;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			project.removeLandmark(id);
 		}
 	}
 
@@ -184,6 +211,8 @@ public class LandmarkMakerTestPanel extends JPanel
 			else if(file.getName().endsWith(".area"))
 			{
 				project = new AreaProject(FooIOUtil.readBufferFromFile(file));
+				
+				
 			}
 			else if(file.getName().endsWith(".area.png"))
 			{
@@ -245,17 +274,8 @@ public class LandmarkMakerTestPanel extends JPanel
 		project.draw(g2, zoom);
 	}
 
-	public void giveScrolPaneAccess(JScrollPane scrollContainer)
-	{
-		this.scrollContainer = scrollContainer;
-		
-	}
-
 	public void setLandmarkPanel(JPanel foo)
 	{
 		this.selectionPane = foo;
 	}
-
-	
-	
 }

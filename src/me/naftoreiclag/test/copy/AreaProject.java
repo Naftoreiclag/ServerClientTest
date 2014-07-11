@@ -29,7 +29,7 @@ public class AreaProject extends Project
 	int cWidth;
 	int cHeight;
 
-	private int[][] landmarkData;
+	public int[][] landmarkData;
 	boolean[][] compositeCollisionData;
 	
 	public AreaProject(BufferedImage image)

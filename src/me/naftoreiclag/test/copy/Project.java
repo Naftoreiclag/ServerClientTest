@@ -1,6 +1,7 @@
 package me.naftoreiclag.test.copy;
 
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -79,5 +80,11 @@ public abstract class Project
 		{
 			rightDown = false;
 		}
+	}
+
+	public void removeLandmark(int id)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
