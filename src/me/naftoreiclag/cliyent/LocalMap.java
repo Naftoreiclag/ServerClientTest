@@ -30,7 +30,7 @@ public class LocalMap
 		ChunkPool.loadOriginChunk(player.locationChunkID);
 	}
 
-	public void paint(Graphics2D g2, Player player)
+	public void paint(Graphics2D g2)
 	{
 		int viewRad = 2;
 		int scale = 128;
@@ -66,7 +66,6 @@ public class LocalMap
 		g2.drawImage(meChunk.image, 0 * scale, 0 * scale, scale, scale, null);
 	}
 	
-	/*
 	public Chunk getChunk(long id)
 	{
 		Chunk chunk = chunks.get(id);
@@ -126,5 +125,4 @@ public class LocalMap
 		
 		return new Chunk(data);
 	}
-	*/
 }

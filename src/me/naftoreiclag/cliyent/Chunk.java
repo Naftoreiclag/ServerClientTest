@@ -7,9 +7,6 @@ import me.naftoreiclag.fileparsecommons.ParseCommons;
 
 public class Chunk
 {
-	protected final int localX;
-	protected final int localY;
-	
 	protected final BufferedImage image;
 	
 	protected final long id;
@@ -21,13 +18,8 @@ public class Chunk
 	protected final long eId;
 	protected final long sId;
 	
-	public Chunk(int x, int y, ByteBuffer data)
+	public Chunk(ByteBuffer data)
 	{
-		ChunkPool.addChunk(this);
-		
-		localX = x;
-		localY = y;
-		
 		id = data.getLong();
 		areaId = data.getLong();
 		wId = data.getLong();
@@ -39,13 +31,8 @@ public class Chunk
 		image = ParseCommons.readUnalphaedImage(data, 128, 128);
 	}
 
-	public Chunk(int x, int y)
+	public Chunk()
 	{
-		ChunkPool.addChunk(this);
-		
-		localX = x;
-		localY = y;
-		
 		id = 0;
 		areaId = 0;
 		wId = 0;

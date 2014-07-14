@@ -1,4 +1,4 @@
-package me.naftoreiclag.cliyent;
+package me.naftoreiclag.clienttwo;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,7 +17,7 @@ public class Client extends JPanel
 	{
 		private MainFrame() throws Exception
 		{
-			super("Client");
+			super("Client two");
 			
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setSize(500, 500);
@@ -33,9 +33,6 @@ public class Client extends JPanel
 		MainFrame m = new MainFrame();
 		m.setVisible(true);
 	}
-	
-	public LocalMap map;
-	public Player player;
 	
 	String address = "localhost";
 	int port = 1337;
@@ -59,8 +56,6 @@ public class Client extends JPanel
 		
 		System.out.println("Waiting for server to give a spawn chunk");
 		long spawnChunk = fromServer.readLong();
-
-		player = new Player(spawnChunk);
 	}
 	
 	@Override
@@ -69,7 +64,5 @@ public class Client extends JPanel
 		Graphics2D g2 = (Graphics2D) g;
 		
 		g2.setColor(Color.WHITE);
-		
-		map.paint(g2, player);
 	}
 }
