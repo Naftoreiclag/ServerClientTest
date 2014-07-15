@@ -79,6 +79,8 @@ public class Server
 	
 	public static class ServicingThread extends Thread
 	{
+		public final Player player;
+		
 		public final Socket socket;
 		
 		public final DataOutputStream toClient;
@@ -95,6 +97,8 @@ public class Server
 			
 			say("Connection Established!");
 			
+			player = new Player(spawnChunks[15], (byte) 8, (byte) 8);
+			
 			this.debugId = debugId;
 		}
 		
@@ -110,9 +114,18 @@ public class Server
 		
 		@Override
 		public void run()
-		{
-			boolean conversationSustained = true;
-			while(conversationSustained)
+		{	
+			try
+			{
+				sendPlayerLocationUpdate();
+			}
+			catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			while(true)
 			{
 				say("Waiting for client to request something...");
 				try
@@ -120,39 +133,51 @@ public class Server
 					byte requestType;
 					requestType = fromClient.readByte();
 
-					if(requestType == 0)
+					if(requestType == 0x00)
 					{
 						say("Client wants to disconnect.");
+
+						break;
 					}
-					else if(requestType == 1)
+					else if(requestType == 0x01)
 					{
 						say("Client wants a chunk.");
 						say("Waiting for client to specify chunk...");
 						long requestedChunk = fromClient.readLong();
 						say("Client wants chunk " + requestedChunk);
 
-						byte[] chunkBytes = null;
-						try
+						sendChunk(requestedChunk);
+					}
+					else if(requestType == 0x02)
+					{
+						say("Client wants to move west.");
+						if(player.moveWest())
 						{
-							chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks2/" + requestedChunk + ".c"));
+							sendPlayerLocationUpdate();
 						}
-						catch(NoSuchFileException e)
+					}
+					else if(requestType == 0x03)
+					{
+						say("Client wants to move north.");
+						if(player.moveNorth())
 						{
-							sayErr("Chunk " + requestedChunk + " does not exist.");
-							toClient.writeInt(0);
-							sayErr("Client informed of this.");
+							sendPlayerLocationUpdate();
 						}
-
-						if(chunkBytes != null)
+					}
+					else if(requestType == 0x04)
+					{
+						say("Client wants to move east.");
+						if(player.moveEast())
 						{
-							int fileSize = chunkBytes.length;
-
-							toClient.writeInt(fileSize);
-							say("Informed client that chunk " + requestedChunk + " is " + fileSize + "bytes.");
-
-							toClient.write(chunkBytes, 0, chunkBytes.length);
-							toClient.flush();
-							say("Sent client chunk.");
+							sendPlayerLocationUpdate();
+						}
+					}
+					else if(requestType == 0x05)
+					{
+						say("Client wants to move south.");
+						if(player.moveSouth())
+						{
+							sendPlayerLocationUpdate();
 						}
 					}
 				}
@@ -160,7 +185,6 @@ public class Server
 				{
 					sayErr("Communiation with client lost: " + e.getLocalizedMessage());
 
-					conversationSustained = false;
 					break;
 				}
 			}
@@ -174,6 +198,50 @@ public class Server
 				sayErr("Issue closing socket: " + e.getLocalizedMessage());
 			}
 			say("Socket closed.");
+		}
+		
+		private void sendChunk(long requestedChunk) throws IOException
+		{
+			toClient.write(0x01);
+			
+			byte[] chunkBytes = null;
+			try
+			{
+				chunkBytes = Files.readAllBytes(Paths.get(serverDirectory + "map/chunks2/" + requestedChunk + ".c"));
+			}
+			catch(NoSuchFileException e)
+			{
+				sayErr("Chunk " + requestedChunk + " does not exist.");
+				toClient.writeInt(0);
+				sayErr("Client informed of this.");
+			}
+			catch(IOException e)
+			{
+				sayErr("Error reading chunk" + requestedChunk + ": " + e.getLocalizedMessage());
+				toClient.writeInt(0);
+				sayErr("Client informed of this.");
+			}
+
+			if(chunkBytes != null)
+			{
+				int fileSize = chunkBytes.length;
+
+				toClient.writeInt(fileSize);
+				say("Informed client that chunk " + requestedChunk + " is " + fileSize + "bytes.");
+
+				toClient.write(chunkBytes, 0, chunkBytes.length);
+				toClient.flush();
+				say("Sent client chunk.");
+			}
+		}
+
+		private void sendPlayerLocationUpdate() throws IOException
+		{
+			toClient.write(0x02);
+			
+			toClient.writeLong(player.cId);
+			toClient.writeByte(player.x);
+			toClient.writeByte(player.y);
 		}
 	}
 }

@@ -3,8 +3,11 @@ package me.naftoreiclag.clienttwo;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 import javax.swing.JFrame;
@@ -41,6 +44,10 @@ public class Client extends JPanel
 	DataOutputStream toServer;
 	DataInputStream fromServer;
 	
+	Player player;
+	
+	ChunkPool pool;
+	
 	public Client() throws Exception
 	{
 		this.setSize(500, 500);
@@ -48,6 +55,7 @@ public class Client extends JPanel
 		this.setFocusable(true);
 		this.requestFocusInWindow();
 		
+		player = new Player();
 		
 		socket = new Socket(address, port);
 		toServer = new DataOutputStream(socket.getOutputStream());
@@ -55,7 +63,84 @@ public class Client extends JPanel
 		System.out.println("Connection established to " + address + ":" + port + "...");
 		
 		System.out.println("Waiting for server to give a spawn chunk");
-		long spawnChunk = fromServer.readLong();
+		updatePosition();
+		
+		pool = new ChunkPool(toServer, fromServer);
+		
+		this.addKeyListener(new KeyListener()
+		{
+			@Override
+			public void keyPressed(KeyEvent e) { kPress(e); }
+			@Override
+			public void keyReleased(KeyEvent e) { kRelease(e); }
+			@Override
+			public void keyTyped(KeyEvent e) { }
+		});
+	}
+	
+	private void kPress(KeyEvent e)
+	{
+		int key = e.getKeyCode();
+		
+		try
+		{
+			if(key == 37)
+			{
+				goWest();
+			}
+			else if(key == 39)
+			{
+				goEast();
+			}
+			else if(key == 38)
+			{
+				goNorth();
+			}
+			else if(key == 40)
+			{
+				goSouth();
+			}
+		}
+		catch(Exception e2)
+		{
+			e2.printStackTrace();
+		}
+	}
+	
+	private void kRelease(KeyEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void updatePosition() throws IOException
+	{
+		fromServer.readByte();
+		
+		player.cId = fromServer.readLong();
+		player.x = fromServer.readByte();
+		player.y = fromServer.readByte();
+	}
+	
+	private void goWest() throws IOException
+	{
+		toServer.write(0x03);
+		updatePosition();
+	}
+	private void goNorth() throws IOException
+	{
+		toServer.write(0x04);
+		updatePosition();
+	}
+	private void goEast() throws IOException
+	{
+		toServer.write(0x05);
+		updatePosition();
+	}
+	private void goSouth() throws IOException
+	{
+		toServer.write(0x06);
+		updatePosition();
 	}
 	
 	@Override
@@ -64,5 +149,7 @@ public class Client extends JPanel
 		Graphics2D g2 = (Graphics2D) g;
 		
 		g2.setColor(Color.WHITE);
+		
+		pool.paint(g2, player);
 	}
 }
