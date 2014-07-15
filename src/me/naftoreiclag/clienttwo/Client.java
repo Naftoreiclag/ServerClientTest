@@ -105,6 +105,8 @@ public class Client extends JPanel
 		{
 			e2.printStackTrace();
 		}
+		
+		this.repaint();
 	}
 	
 	private void kRelease(KeyEvent e)
@@ -124,22 +126,22 @@ public class Client extends JPanel
 	
 	private void goWest() throws IOException
 	{
-		toServer.write(0x03);
+		toServer.write(0x02);
 		updatePosition();
 	}
 	private void goNorth() throws IOException
 	{
-		toServer.write(0x04);
+		toServer.write(0x03);
 		updatePosition();
 	}
 	private void goEast() throws IOException
 	{
-		toServer.write(0x05);
+		toServer.write(0x04);
 		updatePosition();
 	}
 	private void goSouth() throws IOException
 	{
-		toServer.write(0x06);
+		toServer.write(0x05);
 		updatePosition();
 	}
 	
